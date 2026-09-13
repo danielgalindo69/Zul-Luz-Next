@@ -241,9 +241,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         </div>
 
         {/* ── Category strip ── */}
-        <div className="border-t border-border/30 bg-cream/80">
+        <div className="hidden border-t border-border/30 bg-cream/80 lg:block">
           <div className="max-w-[1400px] mx-auto px-4 sm:px-6">
-            <div className="flex items-center gap-0 overflow-x-auto scrollbar-none">
+            <div className="flex items-center gap-0 overflow-x-auto scrollbar-none lg:overflow-visible">
               <div className="group relative flex-shrink-0">
                 <button
                   type="button"
