@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useStore } from '@/context/StoreContext'
 import { PRODUCTS, type Product } from '@/lib/catalog'
-import { MegaMenu, NAV_DATA } from './MegaMenu'
+import { NAV_DATA } from './MegaMenu'
 import { ChevronDown, ChevronRight } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ActiveLink } from './ActiveLink'
@@ -151,8 +151,13 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     { label: 'Loungewear', query: 'lounge', href: '/lifestyle' },
   ]
 
+  const LINGERIE_SUBCATEGORIES = [
+    { label: 'Bras', href: '/lingerie/bras' },
+    { label: 'Panties', href: '/lingerie/panties' },
+    { label: 'Sets', href: '/lingerie/sets' },
+  ]
+
   const NAV_CATS = [
-    { label: 'Lingerie', href: '/lingerie' },
     { label: 'Sleepwear', href: '/sleepwear' },
     { label: 'Lifestyle', href: '/lifestyle' },
     { label: 'Best Sellers', href: '/best-sellers' },
@@ -239,6 +244,37 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <div className="border-t border-border/30 bg-cream/80">
           <div className="max-w-[1400px] mx-auto px-4 sm:px-6">
             <div className="flex items-center gap-0 overflow-x-auto scrollbar-none">
+              <div className="group relative flex-shrink-0">
+                <button
+                  type="button"
+                  className={`flex items-center gap-1 px-3 sm:px-4 py-2.5 text-[11px] sm:text-xs tracking-[0.15em] uppercase font-medium transition-all duration-200 border-b-2 whitespace-nowrap ${
+                    pathname?.startsWith('/lingerie')
+                      ? 'border-wine text-wine'
+                      : 'border-transparent text-dark/70 hover:text-wine hover:border-wine/40'
+                  }`}
+                >
+                  Lingerie
+                  <ChevronDown
+                    className="h-3.5 w-3.5 transition-transform duration-200 group-hover:rotate-180 group-focus-within:rotate-180"
+                    aria-hidden="true"
+                  />
+                </button>
+                <div
+                  className="invisible pointer-events-none absolute left-0 top-[calc(100%-1px)] z-50 min-w-44 translate-y-1 overflow-hidden rounded-b-lg border border-border/70 bg-cream opacity-0 shadow-lg transition-all duration-150 group-hover:pointer-events-auto group-hover:visible group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:visible group-focus-within:translate-y-0 group-focus-within:opacity-100"
+                  role="menu"
+                  aria-label="Lingerie categories"
+                >
+                  <Link href="/lingerie" role="menuitem" className="block border-b border-border/50 px-4 py-3 text-[10px] font-semibold uppercase tracking-[0.16em] text-wine transition-colors hover:bg-blush-light">
+                    Shop all lingerie
+                  </Link>
+                  {LINGERIE_SUBCATEGORIES.map((category) => (
+                    <Link key={category.label} href={category.href} role="menuitem" className="block px-4 py-3 text-xs text-dark/75 transition-colors hover:bg-blush-light hover:text-wine">
+                      {category.label}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+
               {NAV_CATS.map(cat => (
                 <ActiveLink
                   key={cat.label}

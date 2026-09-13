@@ -3,14 +3,16 @@
 @import 'tailwindcss';
 
 @theme {
-  --color-cream: #FAF6F1;
-  --color-wine: #8C3F55;
-  --color-blush: #EAD6C6;
-  --color-blush-light: #F5EDE4;
-  --color-dark: #1A1108;
-  --color-muted: #8A7468;
-  --color-border: #E0D1C5;
-  --color-terracotta: #C4895E;
+  /* Zul Luz reference palette: aqua brand field, deep teal typography,
+     and the warm satin tones visible in the campaign image. */
+  --color-cream: #FCFCFA;
+  --color-wine: #155B5E;
+  --color-blush: #ADD7D9;
+  --color-blush-light: #E7F2F1;
+  --color-dark: #143E40;
+  --color-muted: #687776;
+  --color-border: #B9DCDD;
+  --color-terracotta: #B97858;
 
   --font-display: 'Fraunces', Georgia, serif;
   --font-body: 'Jost', system-ui, sans-serif;

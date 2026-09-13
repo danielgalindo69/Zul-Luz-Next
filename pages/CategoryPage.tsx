@@ -20,6 +20,12 @@ function useInView(threshold = 0.1) {
 
 type SortOption = 'featured' | 'price-asc' | 'price-desc' | 'newest'
 
+const getPriceValue = (value: string) => {
+  if (!value.trim()) return null
+  const parsedValue = Number(value)
+  return Number.isFinite(parsedValue) && parsedValue >= 0 ? parsedValue : null
+}
+
 const CATEGORY_META: Record<string, { title: string; subtitle: string; hero: string; description: string }> = {
   lingerie: {
     title: 'Lingerie',
@@ -88,6 +94,10 @@ export default function CategoryPage() {
   const pathname = usePathname() ?? ''
   const { toggleFavorite, isFavorite, addToCart } = useStore()
   const [sort, setSort] = useState<SortOption>('featured')
+  const [selectedColors, setSelectedColors] = useState<string[]>([])
+  const [selectedSizes, setSelectedSizes] = useState<string[]>([])
+  const [minPrice, setMinPrice] = useState('')
+  const [maxPrice, setMaxPrice] = useState('')
   const [hoveredId, setHoveredId] = useState<string | null>(null)
   const header = useInView(0.05)
   const grid = useInView(0.05)
@@ -102,13 +112,38 @@ export default function CategoryPage() {
     description: '',
   }
 
-  // Filter products
-  let products = (() => {
+  const scopedProducts = (() => {
     if (slug === 'best-sellers') return PRODUCTS.filter(p => p.isBestSeller)
     if (slug === 'gift-ideas') return PRODUCTS.filter(p => p.isGiftIdea)
     if (['lingerie', 'sleepwear', 'lifestyle'].includes(slug)) return PRODUCTS.filter(p => p.category === slug)
     return PRODUCTS.filter(p => p.subcategory === slug)
   })()
+
+  const colorOptions = Array.from(
+    new Map(scopedProducts.flatMap((product) => product.colors.map((color) => [color.name, color.hex]))).entries()
+  ).map(([name, hex]) => ({ name, hex }))
+  const sizeOptions = Array.from(new Set(scopedProducts.flatMap((product) => product.sizes)))
+  const minimumPrice = getPriceValue(minPrice)
+  const maximumPrice = getPriceValue(maxPrice)
+
+  const toggleFilter = (value: string, setFilter: React.Dispatch<React.SetStateAction<string[]>>) => {
+    setFilter((current) => current.includes(value) ? current.filter((item) => item !== value) : [...current, value])
+  }
+
+  const clearFilters = () => {
+    setSelectedColors([])
+    setSelectedSizes([])
+    setMinPrice('')
+    setMaxPrice('')
+  }
+
+  let products = scopedProducts.filter((product) => {
+    const matchesColor = selectedColors.length === 0 || product.colors.some((color) => selectedColors.includes(color.name))
+    const matchesSize = selectedSizes.length === 0 || product.sizes.some((size) => selectedSizes.includes(size))
+    const matchesMinimumPrice = minimumPrice === null || product.price >= minimumPrice
+    const matchesMaximumPrice = maximumPrice === null || product.price <= maximumPrice
+    return matchesColor && matchesSize && matchesMinimumPrice && matchesMaximumPrice
+  })
 
   // Sort
   products = [...products].sort((a, b) => {
@@ -146,7 +181,7 @@ export default function CategoryPage() {
       </div>
 
       {/* Breadcrumb + Controls */}
-      <div className="max-w-7xl mx-auto px-5 lg:px-10 py-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div className="max-w-7xl mx-auto px-5 lg:px-10 pt-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <nav className="flex items-center gap-2 text-[10px] tracking-wide">
           {breadcrumbs.map((crumb, i) => (
             <span key={i} className="flex items-center gap-2">
@@ -175,6 +210,56 @@ export default function CategoryPage() {
               <option value="newest">Newest</option>
             </select>
           </div>
+        </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-5 lg:px-10 py-5 border-y border-border/55">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-4">
+            <fieldset className="flex items-center gap-2" aria-label="Filter by price">
+              <legend className="sr-only">Price</legend>
+              <span className="text-[10px] font-medium uppercase tracking-[0.14em] text-muted">Price</span>
+              <label className="sr-only" htmlFor="minimum-price">Minimum price</label>
+              <input id="minimum-price" inputMode="decimal" min="0" placeholder="Min" type="number" value={minPrice} onChange={(event) => setMinPrice(event.target.value)} className="w-16 border-b border-border bg-transparent px-1 py-1 text-xs text-dark outline-none placeholder:text-muted/70 focus:border-wine" />
+              <span className="text-muted">–</span>
+              <label className="sr-only" htmlFor="maximum-price">Maximum price</label>
+              <input id="maximum-price" inputMode="decimal" min="0" placeholder="Max" type="number" value={maxPrice} onChange={(event) => setMaxPrice(event.target.value)} className="w-16 border-b border-border bg-transparent px-1 py-1 text-xs text-dark outline-none placeholder:text-muted/70 focus:border-wine" />
+            </fieldset>
+
+            {colorOptions.length > 0 && (
+              <fieldset className="flex flex-wrap items-center gap-2" aria-label="Filter by color">
+                <legend className="sr-only">Color</legend>
+                <span className="mr-1 text-[10px] font-medium uppercase tracking-[0.14em] text-muted">Color</span>
+                {colorOptions.map((color) => {
+                  const isSelected = selectedColors.includes(color.name)
+                  return (
+                    <button key={color.name} type="button" onClick={() => toggleFilter(color.name, setSelectedColors)} aria-pressed={isSelected} title={color.name} className={`h-5 w-5 rounded-full border transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-wine focus:ring-offset-2 ${isSelected ? 'border-dark ring-2 ring-wine ring-offset-2' : 'border-border'}`} style={{ backgroundColor: color.hex }} />
+                  )
+                })}
+              </fieldset>
+            )}
+
+            {sizeOptions.length > 0 && (
+              <fieldset className="flex flex-wrap items-center gap-1.5" aria-label="Filter by size">
+                <legend className="sr-only">Size</legend>
+                <span className="mr-1 text-[10px] font-medium uppercase tracking-[0.14em] text-muted">Size</span>
+                {sizeOptions.map((size) => {
+                  const isSelected = selectedSizes.includes(size)
+                  return (
+                    <button key={size} type="button" onClick={() => toggleFilter(size, setSelectedSizes)} aria-pressed={isSelected} className={`min-w-7 border px-2 py-1 text-[10px] transition-colors focus:outline-none focus:ring-2 focus:ring-wine focus:ring-offset-2 ${isSelected ? 'border-wine bg-wine text-cream' : 'border-border text-dark hover:border-wine hover:text-wine'}`}>
+                      {size}
+                    </button>
+                  )
+                })}
+              </fieldset>
+            )}
+          </div>
+
+          {(selectedColors.length > 0 || selectedSizes.length > 0 || minPrice || maxPrice) && (
+            <button type="button" onClick={clearFilters} className="text-left text-[10px] font-medium uppercase tracking-[0.14em] text-wine underline-offset-4 hover:underline lg:text-right">
+              Clear filters
+            </button>
+          )}
         </div>
       </div>
 
