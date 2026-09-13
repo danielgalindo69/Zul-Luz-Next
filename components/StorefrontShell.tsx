@@ -12,7 +12,9 @@ export function StorefrontShell({ children }: { children: ReactNode }) {
   return (
     <StoreProvider>
       {!splashDone && <SplashScreen onComplete={completeSplash} />}
-      <div className={`transition-all duration-700 ${splashDone ? 'opacity-100 scale-100' : 'opacity-0 scale-[1.04]'}`}>
+      {/* A transformed ancestor turns fixed drawers into document-sized elements.
+          Keep the splash transition to opacity so the cart remains viewport-fixed. */}
+      <div className={`transition-opacity duration-700 ${splashDone ? 'opacity-100' : 'opacity-0'}`}>
         <Layout>{children}</Layout>
       </div>
     </StoreProvider>

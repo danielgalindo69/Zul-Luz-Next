@@ -28,6 +28,23 @@ body {
   overflow-x: hidden;
 }
 
+/* The first design pass was calibrated for a narrow laptop. Give the storefront
+   more presence on desktop without changing the mobile composition. */
+@media (min-width: 1280px) {
+  html { font-size: 106.25%; }
+
+  .text-\[9px\] { font-size: 0.625rem; }
+  .text-\[10px\] { font-size: 0.6875rem; }
+  .text-\[11px\] { font-size: 0.75rem; }
+}
+
+@media (min-width: 1536px) {
+  html { font-size: 112.5%; }
+
+  .max-w-7xl { max-width: 96rem; }
+  .max-w-\[1400px\] { max-width: 100rem; }
+}
+
 ::-webkit-scrollbar {
   width: 4px;
 }
