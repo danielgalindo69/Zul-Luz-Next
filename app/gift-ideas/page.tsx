@@ -1,4 +1,4 @@
-import GiftIdeas from '@/pages/GiftIdeas'
+import GiftIdeas from '@/views/GiftIdeas'
 
 export const metadata = { title: 'Gift Ideas' }
 

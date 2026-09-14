@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation'
-import CategoryPage from '@/pages/CategoryPage'
+import CategoryPage from '@/views/CategoryPage'
 
 const categories = new Set(['lingerie', 'sleepwear', 'lifestyle', 'best-sellers'])
 

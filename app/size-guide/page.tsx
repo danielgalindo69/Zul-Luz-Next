@@ -1,4 +1,4 @@
-import SizeGuide from '@/pages/SizeGuide'
+import SizeGuide from '@/views/SizeGuide'
 
 export const metadata = { title: 'Size Guide' }
 

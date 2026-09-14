@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation'
-import ProductDetail from '@/pages/ProductDetail'
+import ProductDetail from '@/views/ProductDetail'
 import { catalog } from '@/lib/catalog'
 
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
