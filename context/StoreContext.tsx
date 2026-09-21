@@ -11,6 +11,7 @@ export type CartItem = {
 }
 
 type StoreContextType = {
+  products: Product[]
   cart: CartItem[]
   favorites: Product[]
   cartOpen: boolean
@@ -24,10 +25,10 @@ type StoreContextType = {
   cartTotal: number
   cartCount: number
 }
-
+ 
 const StoreContext = createContext<StoreContextType | null>(null)
 
-export function StoreProvider({ children }: { children: ReactNode }) {
+export function StoreProvider({ children, products }: { children: ReactNode; products: Product[] }) {
   const [cart, setCart] = useState<CartItem[]>([])
   const [favorites, setFavorites] = useState<Product[]>([])
   const [cartOpen, setCartOpen] = useState(false)
@@ -85,7 +86,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 
   return (
     <StoreContext.Provider value={{
-      cart, favorites, cartOpen,
+      products, cart, favorites, cartOpen,
       addToCart, removeFromCart, updateQuantity,
       toggleFavorite, isFavorite,
       openCart: () => setCartOpen(true),

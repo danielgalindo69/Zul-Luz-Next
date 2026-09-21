@@ -3,7 +3,6 @@
 import { useRef, useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useParams, usePathname } from 'next/navigation'
-import { PRODUCTS } from '@/lib/catalog'
 import { useStore } from '@/context/StoreContext'
 import { HeartIcon } from '@/components/Layout'
 
@@ -92,7 +91,7 @@ const CATEGORY_META: Record<string, { title: string; subtitle: string; hero: str
 export default function CategoryPage() {
   const params = useParams() ?? {}
   const pathname = usePathname() ?? ''
-  const { toggleFavorite, isFavorite, addToCart } = useStore()
+  const { products: catalogProducts, toggleFavorite, isFavorite } = useStore()
   const [sort, setSort] = useState<SortOption>('featured')
   const [selectedColors, setSelectedColors] = useState<string[]>([])
   const [selectedSizes, setSelectedSizes] = useState<string[]>([])
@@ -113,10 +112,10 @@ export default function CategoryPage() {
   }
 
   const scopedProducts = (() => {
-    if (slug === 'best-sellers') return PRODUCTS.filter(p => p.isBestSeller)
-    if (slug === 'gift-ideas') return PRODUCTS.filter(p => p.isGiftIdea)
-    if (['lingerie', 'sleepwear', 'lifestyle'].includes(slug)) return PRODUCTS.filter(p => p.category === slug)
-    return PRODUCTS.filter(p => p.subcategory === slug)
+    if (slug === 'best-sellers') return catalogProducts.filter(p => p.isBestSeller)
+    if (slug === 'gift-ideas') return catalogProducts.filter(p => p.isGiftIdea)
+    if (['lingerie', 'sleepwear', 'lifestyle'].includes(slug)) return catalogProducts.filter(p => p.category === slug)
+    return catalogProducts.filter(p => p.subcategory === slug)
   })()
 
   const colorOptions = Array.from(
@@ -312,12 +311,12 @@ export default function CategoryPage() {
 
                   {/* Quick add */}
                   <div className="absolute inset-x-0 bottom-0 bg-cream/95 py-3 px-3.5 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out">
-                    <button
-                      onClick={() => addToCart(product, 1, product.colors[0].name, product.sizes[0])}
+                    <Link
+                      href={'/product/' + product.id}
                       className="w-full text-[9px] tracking-[0.16em] uppercase text-dark hover:text-wine transition-colors font-medium"
                     >
-                      + Add to Bag
-                    </button>
+                      Select options
+                    </Link>
                   </div>
                 </div>
 

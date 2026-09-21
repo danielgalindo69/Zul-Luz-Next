@@ -3,7 +3,6 @@
 import { useRef, useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useStore } from '@/context/StoreContext'
-import { getBestSellers } from '@/lib/catalog'
 import { HeartIcon } from '@/components/Layout'
 import { useScrollAnimation } from '@/hooks/useScrollAnimation'
 
@@ -34,8 +33,8 @@ export default function Home() {
   const [activeT, setActiveT] = useState(0)
   const [email, setEmail] = useState('')
   const [subscribed, setSubscribed] = useState(false)
-  const { toggleFavorite, isFavorite, addToCart } = useStore()
-  const bestSellers = getBestSellers()
+  const { products, toggleFavorite, isFavorite } = useStore()
+  const bestSellers = products.filter((product) => product.isBestSeller)
 
   useEffect(() => {
     const t = setInterval(() => setActiveT(i => (i + 1) % TESTIMONIALS.length), 4500)
@@ -174,12 +173,12 @@ export default function Home() {
                     <HeartIcon filled={isFavorite(product.id)} />
                   </button>
                   <div className="absolute inset-x-0 bottom-0 bg-cream/95 py-3 px-3.5 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out">
-                    <button
-                      onClick={() => addToCart(product, 1, product.colors[0].name, product.sizes[0])}
+                    <Link
+                      href={'/product/' + product.id}
                       className="w-full text-[9px] tracking-[0.16em] uppercase text-dark hover:text-wine transition-colors font-medium"
                     >
-                      + Add to Bag
-                    </button>
+                      Select options
+                    </Link>
                   </div>
                 </div>
                 <Link href={`/product/${product.id}`}>

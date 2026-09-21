@@ -3,11 +3,19 @@
 
 export type ProductColor = { name: string; hex: string }
 
+export type ProductVariant = {
+  id: string
+  availableForSale: boolean
+  price: number
+  selectedOptions: { name: string; value: string }[]
+}
+
 export type Product = {
   id: string
   name: string
   subtitle: string
   price: number
+  currencyCode?: string
   originalPrice?: number
   category: 'lingerie' | 'sleepwear' | 'lifestyle'
   subcategory: string
@@ -23,6 +31,10 @@ export type Product = {
   isGiftIdea?: boolean
   rating: number
   reviews: number
+  source?: 'shopify'
+  colorOptionName?: string
+  sizeOptionName?: string
+  variants?: ProductVariant[]
 }
 
 export type CartItem = {

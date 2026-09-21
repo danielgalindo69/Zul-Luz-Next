@@ -11,7 +11,7 @@ const ORDER_HISTORY = [
 ]
 
 export default function Profile() {
-  const { favorites, toggleFavorite, addToCart } = useStore()
+  const { favorites, toggleFavorite } = useStore()
   const [activeTab, setActiveTab] = useState<'favorites' | 'orders' | 'account'>('favorites')
 
   return (
@@ -103,12 +103,12 @@ export default function Profile() {
 
                         {/* Quick add */}
                         <div className="absolute inset-x-0 bottom-0 bg-cream/95 py-3 px-3.5 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out">
-                          <button
-                            onClick={() => addToCart(product, 1, product.colors[0].name, product.sizes[0])}
+                          <Link
+                            href={'/product/' + product.id}
                             className="w-full text-[9px] tracking-[0.16em] uppercase text-dark hover:text-wine transition-colors font-medium"
                           >
-                            + Add to Bag
-                          </button>
+                            Select options
+                          </Link>
                         </div>
                       </div>
                       <Link href={`/product/${product.id}`}>

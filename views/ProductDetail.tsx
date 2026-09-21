@@ -2,10 +2,9 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { useParams, useRouter } from 'next/navigation'
-import { getProductById, PRODUCTS } from '@/lib/catalog'
 import { useStore } from '@/context/StoreContext'
 import { HeartIcon } from '@/components/Layout'
+import type { Product } from '@/lib/types'
 
 const StarIcon = ({ filled = true }: { filled?: boolean }) => (
   <svg width="12" height="12" viewBox="0 0 24 24" fill={filled ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.5">
@@ -19,11 +18,8 @@ const ChevronIcon = ({ open }: { open: boolean }) => (
   </svg>
 )
 
-export default function ProductDetail() {
-  const { id } = useParams<{ id: string | string[] }>() ?? {}
-  const router = useRouter()
-  const product = getProductById(Array.isArray(id) ? id[0] : id ?? '')
-  const { addToCart, toggleFavorite, isFavorite } = useStore()
+export default function ProductDetail({ product }: { product: Product }) {
+  const { products, addToCart, toggleFavorite, isFavorite } = useStore()
 
   const [activeImg, setActiveImg] = useState(0)
   const [selectedColor, setSelectedColor] = useState(0)
@@ -32,17 +28,16 @@ export default function ProductDetail() {
   const [openAccordion, setOpenAccordion] = useState<string | null>('description')
   const [addedFeedback, setAddedFeedback] = useState(false)
   const [sizeError, setSizeError] = useState(false)
-
-  if (!product) {
-    return (
-      <div className="min-h-[60vh] flex flex-col items-center justify-center text-center px-5">
-        <p className="font-display text-2xl font-light text-dark mb-3">Product not found</p>
-        <Link href="/" className="text-[10px] tracking-[0.15em] uppercase border-b border-dark pb-0.5 hover:text-wine hover:border-wine transition-colors">
-          Back to Home
-        </Link>
-      </div>
-    )
-  }
+  const [variantError, setVariantError] = useState(false)
+  const color = product.colors[selectedColor]?.name ?? 'Standard'
+  const size = selectedSize || product.sizes[0]
+  const selectedVariant = product.variants?.find((variant) =>
+    (!product.colorOptionName || variant.selectedOptions.some((option) =>
+      option.name === product.colorOptionName && option.value === color)) &&
+    (!product.sizeOptionName || variant.selectedOptions.some((option) =>
+      option.name === product.sizeOptionName && option.value === size))
+  )
+  const displayPrice = selectedVariant?.price ?? product.price
 
   const handleAddToCart = () => {
     if (!selectedSize && product.sizes[0] !== 'One Size') {
@@ -50,14 +45,19 @@ export default function ProductDetail() {
       return
     }
     setSizeError(false)
-    addToCart(product, quantity, product.colors[selectedColor].name, selectedSize || product.sizes[0])
+    if (product.source === 'shopify' && (!selectedVariant || !selectedVariant.availableForSale)) {
+      setVariantError(true)
+      return
+    }
+    setVariantError(false)
+    addToCart({ ...product, price: displayPrice }, quantity, color, size)
     setAddedFeedback(true)
     setTimeout(() => setAddedFeedback(false), 2000)
   }
 
   const toggleAccordion = (key: string) => setOpenAccordion(prev => prev === key ? null : key)
 
-  const related = PRODUCTS.filter(p => p.category === product.category && p.id !== product.id).slice(0, 4)
+  const related = products.filter(p => p.category === product.category && p.id !== product.id).slice(0, 4)
 
   const breadcrumbs = [
     { label: 'Home', href: '/' },
@@ -145,17 +145,17 @@ export default function ProductDetail() {
               <p className="text-[10px] tracking-[0.2em] uppercase text-wine mb-2 font-medium">{product.category.charAt(0).toUpperCase() + product.category.slice(1)}</p>
               <h1 className="font-display text-[clamp(1.6rem,3vw,2.2rem)] font-light text-dark leading-tight mb-2">{product.name}</h1>
               <p className="text-xs text-muted mb-4">{product.subtitle}</p>
-              <div className="flex items-center gap-3">
+              {product.reviews > 0 && <div className="flex items-center gap-3">
                 <div className="flex items-center gap-0.5 text-wine">
                   {[1, 2, 3, 4, 5].map(n => <StarIcon key={n} filled={n <= Math.round(product.rating)} />)}
                 </div>
                 <span className="text-xs text-muted">{product.rating} ({product.reviews} reviews)</span>
-              </div>
+              </div>}
             </div>
 
             {/* Price */}
             <div className="flex items-baseline gap-3 mb-7 pb-7 border-b border-border">
-              <span className="font-display text-2xl font-light text-dark">${product.price.toFixed(2)}</span>
+              <span className="font-display text-2xl font-light text-dark">${displayPrice.toFixed(2)}</span>
               {product.originalPrice && (
                 <span className="text-sm text-muted line-through">${product.originalPrice.toFixed(2)}</span>
               )}
@@ -167,16 +167,16 @@ export default function ProductDetail() {
             </div>
 
             {/* Color picker */}
-            <div className="mb-6">
+            {product.colorOptionName && <div className="mb-6">
               <div className="flex items-center justify-between mb-3">
                 <span className="text-[10px] tracking-[0.14em] uppercase text-dark font-medium">Color</span>
-                <span className="text-xs text-muted">{product.colors[selectedColor].name}</span>
+                <span className="text-xs text-muted">{color}</span>
               </div>
               <div className="flex items-center gap-2.5 flex-wrap">
                 {product.colors.map((color, i) => (
                   <button
                     key={color.name}
-                    onClick={() => setSelectedColor(i)}
+                    onClick={() => { setSelectedColor(i); setVariantError(false) }}
                     title={color.name}
                     className={`relative w-8 h-8 rounded-full border-2 transition-all duration-200 ${selectedColor === i ? 'border-wine scale-110' : 'border-border hover:border-muted'}`}
                     style={{ backgroundColor: color.hex }}
@@ -189,7 +189,7 @@ export default function ProductDetail() {
                   </button>
                 ))}
               </div>
-            </div>
+            </div>}
 
             {/* Size picker */}
             {product.sizes[0] !== 'One Size' && (
@@ -206,7 +206,7 @@ export default function ProductDetail() {
                   {product.sizes.map(size => (
                     <button
                       key={size}
-                      onClick={() => { setSelectedSize(size); setSizeError(false) }}
+                      onClick={() => { setSelectedSize(size); setSizeError(false); setVariantError(false) }}
                       className={`min-w-[44px] h-10 px-3 border text-xs transition-all duration-200 font-medium ${selectedSize === size ? 'border-wine bg-wine text-cream' : 'border-border text-dark hover:border-dark'}`}
                     >
                       {size}
@@ -214,6 +214,9 @@ export default function ProductDetail() {
                   ))}
                 </div>
               </div>
+            )}
+            {variantError && (
+              <p className="mb-5 text-xs text-wine" role="alert">Esta combinación no está disponible. Prueba otra talla o color.</p>
             )}
 
             {/* Quantity */}
@@ -289,7 +292,9 @@ export default function ProductDetail() {
                   </ul>
                 ),
               },
-            ].map(section => (
+            ].filter(section => section.key === 'description' ||
+              (section.key === 'material' && Boolean(product.material)) ||
+              (section.key === 'usage' && product.usageGuide.length > 0)).map(section => (
               <div key={section.key} className="border-b border-border last:border-0">
                 <button
                   onClick={() => toggleAccordion(section.key)}

@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { StorefrontShell } from '@/components/StorefrontShell'
+import { connection } from 'next/server'
+import { catalog } from '@/lib/catalog-server'
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'),
@@ -9,10 +11,12 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  await connection()
+  const products = await catalog.getProducts()
   return (
     <html lang="en">
-      <body><StorefrontShell>{children}</StorefrontShell></body>
+      <body><StorefrontShell products={products}>{children}</StorefrontShell></body>
     </html>
   );
 }

@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useStore } from '@/context/StoreContext'
-import { PRODUCTS, type Product } from '@/lib/catalog'
+import type { Product } from '@/lib/types'
 import { NAV_DATA } from './MegaMenu'
 import { ChevronDown, ChevronRight } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -32,6 +32,7 @@ export function HeartIcon({ filled, className = '' }: { filled: boolean; classNa
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const {
+    products,
     cart,
     favorites,
     cartOpen,
@@ -96,7 +97,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       return
     }
     const query = searchQuery.toLowerCase()
-    const filtered = PRODUCTS.filter(
+    const filtered = products.filter(
       p =>
         p.name.toLowerCase().includes(query) ||
         p.subtitle.toLowerCase().includes(query) ||
@@ -104,7 +105,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         p.subcategory.toLowerCase().includes(query)
     ).slice(0, 4)
     setSearchResults(filtered)
-  }, [searchQuery])
+  }, [searchQuery, products])
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -137,7 +138,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const amountToFreeShipping = freeShippingThreshold - cartTotal
 
   const searchInputRef = useRef<HTMLInputElement>(null)
-  const [featuredProducts] = useState(() => PRODUCTS.filter(p => p.isBestSeller || p.isNew).slice(0, 6))
+  const featuredProducts = products.filter(p => p.isBestSeller || p.isNew).slice(0, 6)
 
   const SEARCH_TAGS = [
     { label: 'Lingerie', query: 'lingerie', href: '/lingerie' },
