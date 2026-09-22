@@ -190,17 +190,19 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex flex-col min-h-screen font-body bg-cream text-dark overflow-x-hidden">
 
-      {/* 1. Announcement Bar */}
-      <div className="bg-wine text-cream h-7 py-1 text-[9px] font-medium tracking-[0.25em] uppercase overflow-hidden relative z-50 select-none">
-        <div className="absolute inset-0 flex items-center justify-center">
-          <p className="animate-fade-in text-center px-4">{announcements[announcementIndex]}</p>
+      {/* Fixed global navigation: announcement + main header */}
+      <div className="fixed inset-x-0 top-0 z-[50]">
+        {/* 1. Announcement Bar */}
+        <div className="relative h-7 select-none overflow-hidden bg-wine py-1 text-[9px] font-medium uppercase tracking-[0.25em] text-cream">
+          <div className="absolute inset-0 flex items-center justify-center">
+            <p className="animate-fade-in px-4 text-center">{announcements[announcementIndex]}</p>
+          </div>
         </div>
-      </div>
 
-      {/* 2. Global Header — Temu-style: Logo | Search Bar | Icons */}
-      <header className={`sticky top-0 z-[45] w-full transition-all duration-300 ${
-        scrolled ? 'bg-cream/96 backdrop-blur-md shadow-md' : 'bg-cream shadow-sm'
-      }`}>
+        {/* 2. Global Header — Temu-style: Logo | Search Bar | Icons */}
+        <header className={`w-full transition-all duration-300 ${
+          scrolled ? 'bg-cream/96 backdrop-blur-md shadow-md' : 'bg-cream shadow-sm'
+        }`}>
 
         {/* ── Main Row ── */}
         <div className="max-w-[1400px] mx-auto grid grid-cols-[auto_minmax(0,1fr)_auto_auto] items-center gap-1 px-3 py-2.5 sm:gap-3 sm:px-6 lg:grid-cols-[auto_minmax(0,1fr)_auto]">
@@ -314,7 +316,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </div>
           </div>
         </div>
-      </header>
+        </header>
+      </div>
+
+      {/* Preserve document flow beneath the fixed navigation. */}
+      <div className="h-[88px] flex-none lg:h-[123px] xl:h-[128px]" aria-hidden="true" />
 
       {/* ══ SEARCH OVERLAY ══════════════════════════════════════════ */}
       <AnimatePresence>

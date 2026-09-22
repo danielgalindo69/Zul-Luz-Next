@@ -62,11 +62,11 @@ export default function AboutUs() {
         ref={s2.ref}
         className={`grid lg:grid-cols-2 overflow-hidden transition-all duration-700 delay-100 ${s2.inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
       >
-        <div className="relative overflow-hidden h-[60vw] sm:h-[50vw] lg:h-auto bg-blush">
+        <div className="relative aspect-[4/5] overflow-hidden bg-blush sm:aspect-[5/4] lg:aspect-auto lg:min-h-[36rem]">
           <img
             src="https://images.unsplash.com/photo-1750064164897-093dc853c98a?w=850&h=950&fit=crop&auto=format"
             alt="Colombian craftsmanship"
-            className="w-full h-full object-cover object-center hover:scale-[1.03] transition-transform duration-1000"
+            className="h-full w-full object-cover object-[center_20%] transition-transform duration-1000 hover:scale-[1.03] sm:object-center"
           />
         </div>
         <div className="flex flex-col justify-center px-8 py-16 lg:py-0 lg:px-14 xl:px-20 bg-blush-light">
@@ -152,11 +152,11 @@ export default function AboutUs() {
             </a>
           </div>
         </div>
-        <div className="relative overflow-hidden h-[60vw] sm:h-[50vw] lg:h-auto bg-blush">
+        <div className="relative aspect-[4/5] overflow-hidden bg-blush sm:aspect-[5/4] lg:aspect-auto lg:min-h-[36rem]">
           <img
             src="https://images.unsplash.com/photo-1778777366990-62cd674e481a?w=850&h=950&fit=crop&auto=format"
             alt="Zul Luz community"
-            className="w-full h-full object-cover object-center hover:scale-[1.03] transition-transform duration-1000"
+            className="h-full w-full object-cover object-[center_20%] transition-transform duration-1000 hover:scale-[1.03] sm:object-center"
           />
         </div>
       </section>
