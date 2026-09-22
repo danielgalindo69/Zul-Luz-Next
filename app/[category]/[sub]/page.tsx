@@ -1,10 +1,14 @@
 import { notFound } from 'next/navigation'
 import CategoryPage from '@/views/CategoryPage'
-import { catalog } from '@/lib/catalog-server'
+
+const subcategories: Record<string, Set<string>> = {
+  lingerie: new Set(['bras', 'panties', 'sets']),
+  sleepwear: new Set(['pajama-sets', 'robes', 'nightgowns']),
+  lifestyle: new Set(['home-fragrance', 'scrunchies', 'accessories']),
+}
 
 export default async function Page({ params }: { params: Promise<{ category: string; sub: string }> }) {
   const { category, sub } = await params
-  const products = await catalog.getProductsBySubcategory(sub)
-  if (!['lingerie', 'lifestyle'].includes(category) || !products.some((product) => product.category === category)) notFound()
+  if (!subcategories[category]?.has(sub)) notFound()
   return <CategoryPage />
 }

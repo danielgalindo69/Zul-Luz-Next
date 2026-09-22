@@ -13,40 +13,11 @@ export const NAV_DATA = [
     featured: true,
     columns: [
       {
-        title: 'Bras & Bralettes',
+        title: 'Explore lingerie',
         items: [
-          { label: 'Lace Bras', href: '/lingerie?type=lace-bras' },
-          { label: 'Bralettes', href: '/lingerie?type=bralettes' },
-          { label: 'Push-Up', href: '/lingerie?type=push-up' },
-          { label: 'Strapless', href: '/lingerie?type=strapless' },
-          { label: 'Sports Bras', href: '/lingerie?type=sports' },
-        ],
-      },
-      {
-        title: 'Panties & Briefs',
-        items: [
-          { label: 'Briefs', href: '/lingerie?type=briefs' },
-          { label: 'Thongs', href: '/lingerie?type=thongs' },
-          { label: 'Bikinis', href: '/lingerie?type=bikinis' },
-          { label: 'High Waisted', href: '/lingerie?type=high-waisted' },
-          { label: 'Seamless', href: '/lingerie?type=seamless' },
-        ],
-      },
-      {
-        title: 'Sets & Bundles',
-        items: [
-          { label: 'Lace Sets', href: '/lingerie?type=lace-sets' },
-          { label: 'Everyday Sets', href: '/lingerie?type=everyday-sets' },
-          { label: 'Bridal Sets', href: '/lingerie?type=bridal' },
-          { label: 'Mix & Match', href: '/lingerie?type=mix-match' },
-        ],
-      },
-      {
-        title: 'Specialty',
-        items: [
-          { label: 'Shapewear', href: '/lingerie?type=shapewear' },
-          { label: 'Bodysuits', href: '/lingerie?type=bodysuits' },
-          { label: 'Garters & Hosiery', href: '/lingerie?type=garters' },
+          { label: 'Bras', href: '/lingerie/bras' },
+          { label: 'Panties', href: '/lingerie/panties' },
+          { label: 'Sets', href: '/lingerie/sets' },
         ],
       },
     ],
@@ -57,39 +28,11 @@ export const NAV_DATA = [
     icon: Moon,
     columns: [
       {
-        title: 'Pajama Sets',
+        title: 'Explore sleepwear',
         items: [
-          { label: 'Silk Sets', href: '/sleepwear?type=silk-sets' },
-          { label: 'Cotton Sets', href: '/sleepwear?type=cotton-sets' },
-          { label: 'Modal Sets', href: '/sleepwear?type=modal-sets' },
-          { label: 'Short Sets', href: '/sleepwear?type=short-sets' },
-          { label: 'Long Sets', href: '/sleepwear?type=long-sets' },
-        ],
-      },
-      {
-        title: 'Robes & Kimonos',
-        items: [
-          { label: 'Silk Robes', href: '/sleepwear?type=silk-robes' },
-          { label: 'Satin Kimonos', href: '/sleepwear?type=kimonos' },
-          { label: 'Plush Robes', href: '/sleepwear?type=plush' },
-          { label: 'Lightweight', href: '/sleepwear?type=lightweight' },
-        ],
-      },
-      {
-        title: 'Nightgowns',
-        items: [
-          { label: 'Silk Chemises', href: '/sleepwear?type=chemises' },
-          { label: 'Long Gowns', href: '/sleepwear?type=long-gowns' },
-          { label: 'Short Nighties', href: '/sleepwear?type=short-nighties' },
-        ],
-      },
-      {
-        title: 'Loungewear',
-        items: [
-          { label: 'Lounge Pants', href: '/sleepwear?type=lounge-pants' },
-          { label: 'Tank Tops', href: '/sleepwear?type=tanks' },
-          { label: 'Cardigans', href: '/sleepwear?type=cardigans' },
-          { label: 'Matching Sets', href: '/sleepwear?type=lounge-sets' },
+          { label: 'Pajama sets', href: '/sleepwear/pajama-sets' },
+          { label: 'Robes', href: '/sleepwear/robes' },
+          { label: 'Nightgowns', href: '/sleepwear/nightgowns' },
         ],
       },
     ],
@@ -100,39 +43,11 @@ export const NAV_DATA = [
     icon: Home,
     columns: [
       {
-        title: 'Robes',
+        title: 'Explore lifestyle',
         items: [
-          { label: 'Silk Robes', href: '/lifestyle?type=silk-robes' },
-          { label: 'Cotton Robes', href: '/lifestyle?type=cotton-robes' },
-          { label: 'Plush Robes', href: '/lifestyle?type=plush-robes' },
-          { label: 'Bridal Robes', href: '/lifestyle?type=bridal-robes' },
-        ],
-      },
-      {
-        title: 'Loungewear',
-        items: [
-          { label: 'Lounge Sets', href: '/lifestyle?type=lounge-sets' },
-          { label: 'Joggers', href: '/lifestyle?type=joggers' },
-          { label: 'Oversized Tees', href: '/lifestyle?type=oversized' },
-          { label: 'Hoodies', href: '/lifestyle?type=hoodies' },
-        ],
-      },
-      {
-        title: 'Accessories',
-        items: [
-          { label: 'Sleep Masks', href: '/lifestyle?type=sleep-masks' },
-          { label: 'Scrunchies', href: '/lifestyle?type=scrunchies' },
-          { label: 'Headbands', href: '/lifestyle?type=headbands' },
-          { label: 'Slippers', href: '/lifestyle?type=slippers' },
-        ],
-      },
-      {
-        title: 'Gift Sets',
-        items: [
-          { label: 'Curated Boxes', href: '/lifestyle?type=curated' },
-          { label: 'Bridal Party', href: '/lifestyle?type=bridal-party' },
-          { label: 'Self-Care Kits', href: '/lifestyle?type=self-care' },
-          { label: 'Build Your Own', href: '/lifestyle?type=build-your-own' },
+          { label: 'Home fragrance', href: '/lifestyle/home-fragrance' },
+          { label: 'Scrunchies', href: '/lifestyle/scrunchies' },
+          { label: 'Accessories', href: '/lifestyle/accessories' },
         ],
       },
     ],
@@ -196,7 +111,7 @@ export function MegaMenu() {
       setOpenIndex(index)
       // Smart dropdown positioning: keep within viewport
       const trigger = e.currentTarget.getBoundingClientRect()
-      const dropW = 680
+      const dropW = 320
       const viewW = window.innerWidth
       const idealLeft = trigger.left + trigger.width / 2 - dropW / 2
       const clampedLeft = Math.max(16, Math.min(idealLeft, viewW - dropW - 16))
@@ -262,10 +177,10 @@ export function MegaMenu() {
                 exit="exit"
                 variants={menuVariants}
                 style={dropdownStyle}
-                className="absolute top-full mt-2.5 z-50 w-[680px] max-w-[90vw] bg-cream border border-border/60 rounded-xl shadow-xl overflow-hidden"
+                className="absolute top-full z-50 w-[320px] max-w-[90vw] bg-cream border border-border/60 rounded-xl shadow-xl overflow-hidden"
                 role="menu"
               >
-                <div className="p-6 grid grid-cols-2 lg:grid-cols-4 gap-8">
+                <div className="p-6 grid grid-cols-1 gap-6">
                   {(item.columns ?? []).map((col, colIndex) => (
                     <motion.div
                       key={col.title}
@@ -297,7 +212,7 @@ export function MegaMenu() {
                   <motion.div
                     variants={itemVariants}
                     custom={(item.columns ?? []).length}
-                    className="lg:col-span-4 border-t border-border/40 pt-6 mt-2"
+                    className="border-t border-border/40 pt-4"
                   >
                     <ActiveLink
                       href={item.href}

@@ -119,9 +119,12 @@ export default function CategoryPage() {
   })()
 
   const colorOptions = Array.from(
-    new Map(scopedProducts.flatMap((product) => product.colors.map((color) => [color.name, color.hex]))).entries()
+    new Map(scopedProducts.flatMap((product) => product.colorOptionName
+      ? product.colors.map((color) => [color.name, color.hex])
+      : [])).entries()
   ).map(([name, hex]) => ({ name, hex }))
-  const sizeOptions = Array.from(new Set(scopedProducts.flatMap((product) => product.sizes)))
+  const sizeOptions = Array.from(new Set(scopedProducts.flatMap((product) =>
+    product.sizes.filter((size) => size !== 'One Size'))))
   const minimumPrice = getPriceValue(minPrice)
   const maximumPrice = getPriceValue(maxPrice)
 
