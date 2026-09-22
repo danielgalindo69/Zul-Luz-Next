@@ -19,7 +19,7 @@ const ChevronIcon = ({ open }: { open: boolean }) => (
 )
 
 export default function ProductDetail({ product }: { product: Product }) {
-  const { products, addToCart, toggleFavorite, isFavorite } = useStore()
+  const { products, addToCart, cartLoading, toggleFavorite, isFavorite } = useStore()
 
   const [activeImg, setActiveImg] = useState(0)
   const [selectedColor, setSelectedColor] = useState(0)
@@ -39,20 +39,22 @@ export default function ProductDetail({ product }: { product: Product }) {
   )
   const displayPrice = selectedVariant?.price ?? product.price
 
-  const handleAddToCart = () => {
+  const handleAddToCart = async () => {
     if (!selectedSize && product.sizes[0] !== 'One Size') {
       setSizeError(true)
       return
     }
     setSizeError(false)
-    if (product.source === 'shopify' && (!selectedVariant || !selectedVariant.availableForSale)) {
+    if (!selectedVariant || !selectedVariant.availableForSale) {
       setVariantError(true)
       return
     }
     setVariantError(false)
-    addToCart({ ...product, price: displayPrice }, quantity, color, size)
-    setAddedFeedback(true)
-    setTimeout(() => setAddedFeedback(false), 2000)
+    const added = await addToCart(selectedVariant.id, quantity)
+    if (added) {
+      setAddedFeedback(true)
+      setTimeout(() => setAddedFeedback(false), 2000)
+    }
   }
 
   const toggleAccordion = (key: string) => setOpenAccordion(prev => prev === key ? null : key)
@@ -239,9 +241,10 @@ export default function ProductDetail({ product }: { product: Product }) {
             <div className="flex gap-3 mb-7">
               <button
                 onClick={handleAddToCart}
-                className={`flex-1 py-4 text-[10px] tracking-[0.18em] uppercase font-medium transition-all duration-300 ${addedFeedback ? 'bg-dark text-cream' : 'bg-wine text-cream hover:bg-dark'}`}
+                disabled={cartLoading}
+                className={`flex-1 py-4 text-[10px] tracking-[0.18em] uppercase font-medium transition-all duration-300 disabled:cursor-wait disabled:opacity-60 ${addedFeedback ? 'bg-dark text-cream' : 'bg-wine text-cream hover:bg-dark'}`}
               >
-                {addedFeedback ? '✓ Added to Bag' : 'Add to Bag'}
+                {cartLoading ? 'Adding…' : addedFeedback ? '✓ Added to Bag' : 'Add to Bag'}
               </button>
               <button
                 onClick={() => toggleFavorite(product)}

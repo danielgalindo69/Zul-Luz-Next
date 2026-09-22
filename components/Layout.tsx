@@ -30,6 +30,14 @@ export function HeartIcon({ filled, className = '' }: { filled: boolean; classNa
   )
 }
 
+function formatMoney(amount: number, currencyCode: string) {
+  try {
+    return new Intl.NumberFormat('en-US', { style: 'currency', currency: currencyCode }).format(amount)
+  } catch {
+    return `$${amount.toFixed(2)}`
+  }
+}
+
 export default function Layout({ children }: { children: React.ReactNode }) {
   const {
     products,
@@ -40,6 +48,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     closeCart,
     cartTotal,
     cartCount,
+    cartCurrencyCode,
+    cartLoading,
+    checkoutLoading,
+    cartError,
+    checkout,
     updateQuantity,
     removeFromCart,
   } = useStore()
@@ -635,7 +648,16 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
           {/* Drawer Body (Scrollable items) */}
           <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-6 xl:p-7 space-y-5">
-            {cart.length === 0 ? (
+            {cartError && (
+              <div className="border border-wine/30 bg-wine/5 px-4 py-3 text-xs leading-relaxed text-wine" role="alert">
+                {cartError}
+              </div>
+            )}
+            {cartLoading && cart.length === 0 ? (
+              <div className="flex h-full items-center justify-center" role="status" aria-live="polite">
+                <span className="text-[10px] font-medium uppercase tracking-[0.18em] text-muted">Loading your bag…</span>
+              </div>
+            ) : cart.length === 0 ? (
               <div className="h-full flex flex-col items-center justify-center text-center space-y-4">
                 <div className="w-12 h-12 bg-blush-light rounded-full flex items-center justify-center text-wine">
                   <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2">
@@ -661,17 +683,17 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 </button>
               </div>
             ) : (
-              cart.map((item, idx) => (
-                <div key={`${item.product.id}-${item.selectedColor}-${item.selectedSize}-${idx}`} className="flex gap-4 border-b border-border pb-5 last:border-b-0 last:pb-0">
+              cart.map((item) => (
+                <div key={item.id} className="flex gap-4 border-b border-border pb-5 last:border-b-0 last:pb-0">
                   {/* Thumbnail Image */}
                   <Link
-                    href={`/product/${item.product.id}`}
+                    href={`/product/${item.productHandle}`}
                     onClick={closeCart}
                     className="w-20 h-26 bg-blush-light overflow-hidden border border-border/40 rounded flex-shrink-0"
                   >
                     <img
-                      src={item.product.images[0]}
-                      alt={item.product.name}
+                      src={item.image?.url ?? '/product-placeholder.svg'}
+                      alt={item.image?.altText ?? item.productTitle}
                       className="w-full h-full object-cover"
                     />
                   </Link>
@@ -681,15 +703,16 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                     <div>
                       <div className="flex justify-between items-start gap-2">
                         <Link
-                          href={`/product/${item.product.id}`}
+                          href={`/product/${item.productHandle}`}
                           onClick={closeCart}
                           className="text-xs font-medium text-dark hover:text-wine transition-colors truncate"
                         >
-                          {item.product.name}
+                          {item.productTitle}
                         </Link>
                         <button
-                          onClick={() => removeFromCart(item.product.id, item.selectedColor, item.selectedSize)}
-                          className="text-muted hover:text-wine p-0.5"
+                          onClick={() => void removeFromCart(item.id)}
+                          disabled={cartLoading}
+                          className="text-muted hover:text-wine p-0.5 disabled:cursor-wait disabled:opacity-40"
                           aria-label="Remove item"
                         >
                           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
@@ -699,23 +722,28 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                         </button>
                       </div>
                       <p className="text-[10px] text-muted font-light mt-0.5">
-                        Color: {item.selectedColor} &bull; Size: {item.selectedSize}
+                        {item.selectedOptions.map((option) => `${option.name}: ${option.value}`).join(' • ') || item.variantTitle}
                       </p>
+                      {!item.availableForSale && <p className="mt-1 text-[10px] text-wine">Currently unavailable</p>}
                     </div>
 
                     <div className="flex items-center justify-between mt-3">
                       {/* Quantity Controls */}
                       <div className="flex items-center border border-border bg-cream-light rounded-sm">
                         <button
-                          onClick={() => updateQuantity(item.product.id, item.selectedColor, item.selectedSize, item.quantity - 1)}
-                          className="w-7 h-7 flex items-center justify-center text-muted hover:text-dark transition-colors font-light text-sm"
+                          onClick={() => void updateQuantity(item.id, item.quantity - 1)}
+                          disabled={cartLoading}
+                          className="w-7 h-7 flex items-center justify-center text-muted hover:text-dark transition-colors font-light text-sm disabled:cursor-wait disabled:opacity-40"
+                          aria-label={`Decrease quantity of ${item.productTitle}`}
                         >
                           &minus;
                         </button>
                         <span className="w-8 text-center text-xs font-medium text-dark select-none">{item.quantity}</span>
                         <button
-                          onClick={() => updateQuantity(item.product.id, item.selectedColor, item.selectedSize, item.quantity + 1)}
-                          className="w-7 h-7 flex items-center justify-center text-muted hover:text-dark transition-colors font-light text-sm"
+                          onClick={() => void updateQuantity(item.id, item.quantity + 1)}
+                          disabled={cartLoading || item.quantity >= 99}
+                          className="w-7 h-7 flex items-center justify-center text-muted hover:text-dark transition-colors font-light text-sm disabled:cursor-wait disabled:opacity-40"
+                          aria-label={`Increase quantity of ${item.productTitle}`}
                         >
                           +
                         </button>
@@ -723,7 +751,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
                       {/* Pricing */}
                       <span className="text-xs font-medium text-dark">
-                        ${(item.product.price * item.quantity).toFixed(2)}
+                        {formatMoney(item.total.amount, item.total.currencyCode)}
                       </span>
                     </div>
                   </div>
@@ -742,10 +770,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                     <span className="text-wine font-medium">You qualify for free shipping! 🚚</span>
                   ) : (
                     <span>
-                      Spend <span className="font-semibold">${amountToFreeShipping.toFixed(2)}</span> more for Free Shipping
+                      Spend <span className="font-semibold">{formatMoney(amountToFreeShipping, cartCurrencyCode)}</span> more for Free Shipping
                     </span>
                   )}
-                  <span className="font-medium">${cartTotal.toFixed(2)} / ${freeShippingThreshold}</span>
+                  <span className="font-medium">{formatMoney(cartTotal, cartCurrencyCode)} / {formatMoney(freeShippingThreshold, cartCurrencyCode)}</span>
                 </div>
                 <div className="w-full h-1 bg-border rounded-full overflow-hidden">
                   <div
@@ -758,17 +786,16 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               {/* Subtotal */}
               <div className="flex items-baseline justify-between pt-1">
                 <span className="text-xs uppercase tracking-wider font-light text-muted">Subtotal</span>
-                <span className="text-base font-semibold text-dark">${cartTotal.toFixed(2)}</span>
+                <span className="text-base font-semibold text-dark">{formatMoney(cartTotal, cartCurrencyCode)}</span>
               </div>
 
               <div className="space-y-2">
                 <button
-                  onClick={() => {
-                    alert('Demo Checkout: Thank you for testing Zul Luz!')
-                  }}
-                  className="w-full bg-wine hover:bg-dark text-cream text-[10px] tracking-[0.2em] uppercase font-semibold py-4 transition-all duration-300 flex items-center justify-center gap-2 hover:shadow-md"
+                  onClick={() => void checkout()}
+                  disabled={checkoutLoading || cartLoading || cart.some((item) => !item.availableForSale)}
+                  className="w-full bg-wine hover:bg-dark text-cream text-[10px] tracking-[0.2em] uppercase font-semibold py-4 transition-all duration-300 flex items-center justify-center gap-2 hover:shadow-md disabled:cursor-wait disabled:opacity-60"
                 >
-                  Proceed to Checkout
+                  {checkoutLoading ? 'Preparing secure checkout…' : 'Proceed to Checkout'}
                 </button>
                 <button
                   onClick={closeCart}

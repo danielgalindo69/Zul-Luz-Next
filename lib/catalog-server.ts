@@ -1,6 +1,7 @@
 import { cache } from 'react'
 import { PRODUCTS, type CatalogRepository } from './catalog'
 import type { Product, ProductColor, ProductVariant } from './types'
+import { storefrontRequest } from './shopify/storefront-client'
 
 type Money = { amount: string; currencyCode: string }
 type ShopifyVariant = {
@@ -127,27 +128,13 @@ function mapProduct(product: ShopifyProduct): Product {
 }
 
 async function queryProducts(cursor: string | null): Promise<ProductPage> {
-  const domain = process.env.SHOPIFY_STORE_DOMAIN?.trim()
-  const token = process.env.SHOPIFY_STOREFRONT_PRIVATE_TOKEN?.trim()
-  const version = process.env.SHOPIFY_STOREFRONT_API_VERSION?.trim()
-  if (!domain || !token || !version) throw new Error('Faltan variables de entorno de Shopify.')
-  if (!/^[a-z0-9][a-z0-9-]*\.myshopify\.com$/i.test(domain)) throw new Error('El dominio técnico de Shopify no es válido.')
-  if (!/^\d{4}-(01|04|07|10)$/.test(version)) throw new Error('La versión de Storefront API no es válida.')
-
-  const response = await fetch('https://' + domain + '/api/' + version + '/graphql.json', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Shopify-Storefront-Private-Token': token,
-    },
-    body: JSON.stringify({ query: PRODUCT_QUERY, variables: { cursor } }),
-    next: { revalidate: 300 },
-  })
-  if (!response.ok) throw new Error('Shopify Storefront API respondió HTTP ' + response.status + '.')
-  const payload = await response.json() as { data?: ProductPage; errors?: { message: string }[] }
-  if (payload.errors?.length) throw new Error('Error GraphQL de Shopify: ' + payload.errors.map((error) => error.message).join('; '))
-  if (!payload.data?.products?.nodes) throw new Error('La respuesta del catálogo Shopify está incompleta.')
-  return payload.data
+  const data = await storefrontRequest<ProductPage>(
+    PRODUCT_QUERY,
+    { cursor },
+    { revalidate: 300 },
+  )
+  if (!data.products?.nodes) throw new Error('La respuesta del catálogo Shopify está incompleta.')
+  return data
 }
 
 export const getCatalogProducts = cache(async (): Promise<Product[]> => {
