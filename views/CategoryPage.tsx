@@ -279,7 +279,7 @@ export default function CategoryPage() {
             </Link>
           </div>
         ) : (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6">
+          <div className="grid grid-cols-1 gap-x-4 gap-y-8 min-[360px]:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 lg:gap-6">
             {products.map((product, i) => (
               <div
                 key={product.id}
@@ -306,14 +306,14 @@ export default function CategoryPage() {
                   {/* Favorite */}
                   <button
                     onClick={() => toggleFavorite(product)}
-                    className={`absolute top-3 right-3 w-8 h-8 flex items-center justify-center bg-cream/90 backdrop-blur-sm border border-border/50 transition-all duration-200 opacity-0 group-hover:opacity-100 ${isFavorite(product.id) ? 'text-wine opacity-100' : 'text-muted hover:text-wine'}`}
+                    className={`absolute top-3 right-3 w-9 h-9 flex items-center justify-center bg-cream/90 backdrop-blur-sm border border-border/50 transition-all duration-200 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 ${isFavorite(product.id) ? 'text-wine lg:opacity-100' : 'text-muted hover:text-wine'}`}
                     aria-label="Add to favorites"
                   >
                     <HeartIcon filled={isFavorite(product.id)} />
                   </button>
 
                   {/* Quick add */}
-                  <div className="absolute inset-x-0 bottom-0 bg-cream/95 py-3 px-3.5 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out">
+                  <div className="absolute inset-x-0 bottom-0 translate-y-0 bg-cream/95 px-3.5 py-3 transition-transform duration-300 ease-out lg:translate-y-full lg:group-hover:translate-y-0">
                     <Link
                       href={'/product/' + product.id}
                       className="w-full text-[9px] tracking-[0.16em] uppercase text-dark hover:text-wine transition-colors font-medium"

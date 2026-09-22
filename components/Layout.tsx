@@ -76,11 +76,31 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   // Close menus and drawer on route changes
   useEffect(() => {
     setMobileMenuOpen(false)
+    setMobileSubOpen({})
     setSearchOpen(false)
     setSearchQuery('')
     setSearchResults([])
     closeCart()
   }, [pathname])
+
+  // Keep mobile overlays usable: lock the page behind them and support Escape.
+  useEffect(() => {
+    const overlayOpen = mobileMenuOpen || searchOpen || cartOpen
+    const previousOverflow = document.body.style.overflow
+    if (overlayOpen) document.body.style.overflow = 'hidden'
+
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape') return
+      setMobileMenuOpen(false)
+      setSearchOpen(false)
+      closeCart()
+    }
+    window.addEventListener('keydown', handleEscape)
+    return () => {
+      document.body.style.overflow = previousOverflow
+      window.removeEventListener('keydown', handleEscape)
+    }
+  }, [mobileMenuOpen, searchOpen, cartOpen, closeCart])
 
   // Announcement bar carousel
   useEffect(() => {
@@ -183,12 +203,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       }`}>
 
         {/* ── Main Row ── */}
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 flex items-center gap-3 sm:gap-4 py-2.5">
+        <div className="max-w-[1400px] mx-auto grid grid-cols-[auto_minmax(0,1fr)_auto_auto] items-center gap-1 px-3 py-2.5 sm:gap-3 sm:px-6 lg:grid-cols-[auto_minmax(0,1fr)_auto]">
 
           {/* Mobile hamburger */}
           <button
             onClick={() => setMobileMenuOpen(true)}
-            className="lg:hidden flex-shrink-0 p-1.5 -ml-1 text-dark hover:text-wine transition-colors"
+            className="lg:hidden flex h-10 w-10 items-center justify-center text-dark hover:text-wine transition-colors"
             aria-label="Open menu"
           >
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4">
@@ -197,30 +217,30 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           </button>
 
           {/* Logo */}
-          <Link href="/" className="flex-shrink-0 font-display tracking-[0.35em] font-light text-dark hover:text-wine transition-colors uppercase select-none text-xl sm:text-2xl lg:text-3xl">
+          <Link href="/" className="min-w-0 truncate whitespace-nowrap font-display text-[1.35rem] tracking-[0.24em] font-light text-dark hover:text-wine transition-colors uppercase select-none sm:text-2xl sm:tracking-[0.35em] lg:text-3xl">
             Zul Luz
           </Link>
 
           {/* ── Search bar (clickable pill — opens overlay) ── */}
           <button
             onClick={() => { setSearchOpen(true); setTimeout(() => searchInputRef.current?.focus(), 80) }}
-            className="flex-1 flex items-center gap-2.5 bg-blush-light/70 hover:bg-blush-light border border-border/60 hover:border-border rounded-full px-4 py-2 sm:py-2.5 text-left group transition-all duration-200"
+            className="ml-auto flex h-10 w-10 min-w-0 items-center justify-center gap-2.5 rounded-full border border-border/60 bg-blush-light/70 text-left transition-all duration-200 hover:border-border hover:bg-blush-light sm:h-auto sm:w-full sm:justify-start sm:px-4 sm:py-2.5"
             aria-label="Open search"
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="text-muted flex-shrink-0">
               <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
             </svg>
-            <span className="text-xs sm:text-sm text-muted/70 font-light truncate">Search lingerie, sleepwear, robes…</span>
+            <span className="hidden min-w-0 truncate text-xs font-light text-muted/70 sm:block sm:text-sm">Search lingerie, sleepwear, robes…</span>
           </button>
 
           {/* ── Right icons ── */}
-          <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
+          <div className="flex items-center gap-0 sm:gap-2 flex-shrink-0">
             <Link href="/profile" className="hidden sm:flex p-2 text-dark hover:text-wine transition-colors" aria-label="Account">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.3">
                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" />
               </svg>
             </Link>
-            <Link href="/profile" className="relative p-2 text-dark hover:text-wine transition-colors" aria-label="Favorites">
+            <Link href="/profile" className="relative hidden p-2 text-dark hover:text-wine transition-colors min-[360px]:block" aria-label="Favorites">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.3">
                 <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
               </svg>
@@ -432,9 +452,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
       {/* 3. Mobile Navigation Menu Drawer */}
       <div
-        className={`fixed inset-0 z-50 lg:hidden pointer-events-none transition-all duration-300 ${
-          mobileMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0'
+        className={`fixed inset-0 z-[70] lg:hidden transition-opacity duration-300 ${
+          mobileMenuOpen ? 'visible opacity-100 pointer-events-auto' : 'invisible opacity-0 pointer-events-none'
         }`}
+        aria-hidden={!mobileMenuOpen}
       >
         {/* Backdrop */}
         <div
@@ -444,11 +465,14 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
         {/* Slider */}
         <div
-          className={`absolute left-0 top-0 bottom-0 w-80 max-w-[85%] bg-cream shadow-2xl flex flex-col p-6 transition-transform duration-300 ${
+          className={`absolute inset-y-0 left-0 flex w-[min(22rem,90vw)] flex-col overflow-hidden bg-cream shadow-2xl transition-transform duration-300 ${
             mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
           }`}
+          role="dialog"
+          aria-modal="true"
+          aria-label="Mobile navigation"
         >
-          <div className="flex items-center justify-between border-b border-border pb-4">
+          <div className="flex flex-none items-center justify-between border-b border-border px-5 py-4">
             <span className="font-display text-xl tracking-[0.2em] font-light text-dark">Zul Luz</span>
             <button
               onClick={() => setMobileMenuOpen(false)}
@@ -463,7 +487,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           </div>
 
           {/* Links */}
-          <nav className="flex flex-col gap-1 py-4">
+          <nav className="flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto px-3 py-3 overscroll-contain">
             {NAV_DATA.map((item, index) => (
               <div key={item.label}>
                 {item.noDropdown ? (
@@ -500,7 +524,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                           animate={{ opacity: 1, height: 'auto' }}
                           exit={{ opacity: 0, height: 0 }}
                           transition={{ duration: 0.25 }}
-                          className="overflow-hidden mt-1 space-y-1 pl-7 border-l border-border/30"
+                          className="overflow-hidden mt-1 ml-5 space-y-1 border-l border-border/50 pl-5 pb-2"
                         >
                           {(item.columns ?? []).map((col, colIndex) => (
                             <li key={col.title} className="space-y-1">
@@ -559,7 +583,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </Link>
           </nav>
 
-          <div className="mt-auto border-t border-border pt-6 text-[10px] text-muted tracking-wider leading-relaxed">
+          <div className="flex-none border-t border-border bg-blush-light/35 px-5 py-4 text-[10px] text-muted tracking-wider leading-relaxed">
             <p className="font-semibold text-dark mb-1">Handcrafted Luxury Lingerie</p>
             <p>Designed with absolute comfort and delicate beauty, handmade in Colombia.</p>
           </div>
@@ -762,18 +786,18 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       </main>
 
       {/* 6. Premium Footer */}
-      <footer className="bg-dark text-cream/90 pt-16 pb-8 border-t border-wine/10 mt-auto">
-        <div className="max-w-7xl mx-auto px-5 lg:px-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 border-b border-cream/10 pb-16">
+      <footer className="mt-auto border-t border-wine/10 bg-dark pt-12 pb-7 text-cream/90 sm:pt-16 sm:pb-8">
+        <div className="mx-auto grid max-w-7xl grid-cols-2 gap-x-6 gap-y-10 border-b border-cream/10 px-5 pb-12 sm:px-7 md:grid-cols-2 md:gap-x-10 lg:grid-cols-5 lg:px-10 lg:pb-16">
           
           {/* Newsletter Signup (Left side - spans 2 columns on large screens) */}
-          <div className="lg:col-span-2 space-y-5">
-            <h3 className="font-display text-2xl tracking-[0.1em] text-cream">Join the Zul Luz Club</h3>
+          <div className="col-span-2 space-y-4 lg:col-span-2 lg:space-y-5">
+            <h3 className="font-display text-xl tracking-[0.08em] text-cream sm:text-2xl sm:tracking-[0.1em]">Join the Zul Luz Club</h3>
             <p className="text-xs text-cream/70 font-light leading-relaxed max-w-sm">
               Subscribe to receive exclusive access to collection launches, editorial campaigns, and premium luxury updates.
             </p>
             
             <form onSubmit={handleNewsletterSubmit} className="space-y-3">
-              <div className="flex items-center border-b border-cream/30 hover:border-cream/70 transition-colors pb-1 max-w-md">
+              <div className="flex max-w-md items-center gap-3 border-b border-cream/30 pb-1 transition-colors hover:border-cream/70">
                 <input
                   type="email"
                   placeholder="Enter your email address"
@@ -782,7 +806,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   onChange={(e) => setNewsletterEmail(e.target.value)}
                   required
                 />
-                <button type="submit" className="text-cream/70 hover:text-cream px-2 py-1 text-[10px] tracking-[0.15em] uppercase font-medium">
+                <button type="submit" className="flex-none py-1 text-[9px] font-medium uppercase tracking-[0.13em] text-cream/70 hover:text-cream sm:px-2 sm:text-[10px] sm:tracking-[0.15em]">
                   {newsletterSubscribed ? 'Subscribed' : 'Subscribe'}
                 </button>
               </div>
@@ -795,7 +819,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           </div>
 
           {/* Column 1: Shop */}
-          <div className="space-y-4">
+          <div className="min-w-0 space-y-4">
             <h4 className="text-[10px] tracking-[0.2em] uppercase font-semibold text-cream/50">Shop</h4>
             <ul className="space-y-2 text-xs font-light">
               <li><Link href="/lingerie" className="hover:text-wine transition-colors">Bras & Lingerie Sets</Link></li>
@@ -806,7 +830,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           </div>
 
           {/* Column 2: Assistance */}
-          <div className="space-y-4">
+          <div className="min-w-0 space-y-4">
             <h4 className="text-[10px] tracking-[0.2em] uppercase font-semibold text-cream/50">Assistance</h4>
             <ul className="space-y-2 text-xs font-light">
               <li><Link href="/size-guide" className="hover:text-wine transition-colors">Size Guide</Link></li>
@@ -817,9 +841,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           </div>
 
           {/* Column 3: Brand */}
-          <div className="space-y-4">
+          <div className="col-span-2 space-y-4 md:col-span-1">
             <h4 className="text-[10px] tracking-[0.2em] uppercase font-semibold text-cream/50">Brand</h4>
-            <ul className="space-y-2 text-xs font-light">
+            <ul className="grid grid-cols-2 gap-x-5 gap-y-2 text-xs font-light md:block md:space-y-2">
               <li><span className="hover:text-wine transition-colors cursor-pointer">Artisanal Sourcing</span></li>
               <li><span className="hover:text-wine transition-colors cursor-pointer">Sustainability</span></li>
               <li><span className="hover:text-wine transition-colors cursor-pointer">Gift Cards</span></li>
@@ -830,7 +854,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         </div>
 
         {/* Footer Bottom Metadata & Copyright */}
-        <div className="max-w-7xl mx-auto px-5 lg:px-10 pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-[10px] text-cream/40 font-light tracking-wider">
+        <div className="mx-auto flex max-w-7xl flex-col items-start justify-between gap-4 px-5 pt-7 text-left text-[9px] font-light tracking-wider text-cream/40 sm:px-7 sm:text-[10px] md:flex-row md:items-center lg:px-10 lg:pt-8">
           <div className="flex items-center gap-2 select-none">
             <span className="font-display text-sm tracking-[0.25em] font-light text-cream">ZUL LUZ</span>
             <span>&bull; Handcrafted Everyday Luxury</span>
@@ -838,7 +862,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           <div>
             &copy; {new Date().getFullYear()} Zul Luz Lingerie. All Rights Reserved. Made in Colombia.
           </div>
-          <div className="flex gap-4">
+          <div className="flex flex-wrap gap-x-4 gap-y-2">
             <span className="hover:text-cream transition-colors cursor-pointer">Privacy Policy</span>
             <span className="hover:text-cream transition-colors cursor-pointer">Terms of Service</span>
           </div>

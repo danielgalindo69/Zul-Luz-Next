@@ -84,7 +84,7 @@ export default function Profile() {
                     Continue Shopping
                   </Link>
                 </div>
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6">
+                <div className="grid grid-cols-1 gap-x-4 gap-y-8 min-[360px]:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 lg:gap-6">
                   {favorites.map(product => (
                     <div key={product.id} className="group">
                       <div className="relative overflow-hidden bg-blush mb-4" style={{ aspectRatio: '3/4' }}>
@@ -102,7 +102,7 @@ export default function Profile() {
                         </button>
 
                         {/* Quick add */}
-                        <div className="absolute inset-x-0 bottom-0 bg-cream/95 py-3 px-3.5 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out">
+                        <div className="absolute inset-x-0 bottom-0 translate-y-0 bg-cream/95 px-3.5 py-3 transition-transform duration-300 ease-out lg:translate-y-full lg:group-hover:translate-y-0">
                           <Link
                             href={'/product/' + product.id}
                             className="w-full text-[9px] tracking-[0.16em] uppercase text-dark hover:text-wine transition-colors font-medium"

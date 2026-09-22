@@ -155,7 +155,7 @@ export default function Home() {
               View All <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
             </Link>
           </div>
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
+          <div className="grid grid-cols-1 gap-x-4 gap-y-8 min-[360px]:grid-cols-2 lg:grid-cols-4 lg:gap-6">
             {bestSellers.slice(0, 4).map((product, i) => (
               <div key={product.id} className="group" style={{ transitionDelay: `${i * 80}ms` }}>
                 <div className="relative overflow-hidden bg-blush mb-4" style={{ aspectRatio: '3/4' }}>
@@ -172,7 +172,7 @@ export default function Home() {
                   >
                     <HeartIcon filled={isFavorite(product.id)} />
                   </button>
-                  <div className="absolute inset-x-0 bottom-0 bg-cream/95 py-3 px-3.5 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out">
+                  <div className="absolute inset-x-0 bottom-0 translate-y-0 bg-cream/95 px-3.5 py-3 transition-transform duration-300 ease-out lg:translate-y-full lg:group-hover:translate-y-0">
                     <Link
                       href={'/product/' + product.id}
                       className="w-full text-[9px] tracking-[0.16em] uppercase text-dark hover:text-wine transition-colors font-medium"

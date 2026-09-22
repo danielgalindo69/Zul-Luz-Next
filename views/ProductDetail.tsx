@@ -320,7 +320,7 @@ export default function ProductDetail({ product }: { product: Product }) {
               <p className="text-[10px] tracking-[0.22em] uppercase text-wine mb-3 font-medium">You may also like</p>
               <h2 className="font-display text-2xl lg:text-3xl font-light text-dark">Complete Your Collection</h2>
             </div>
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
+            <div className="grid grid-cols-1 gap-x-4 gap-y-8 min-[360px]:grid-cols-2 lg:grid-cols-4 lg:gap-6">
               {related.map(p => (
                 <div key={p.id} className="group">
                   <div className="relative overflow-hidden bg-blush mb-4" style={{ aspectRatio: '3/4' }}>
@@ -329,7 +329,7 @@ export default function ProductDetail({ product }: { product: Product }) {
                     </Link>
                     <button
                       onClick={() => toggleFavorite(p)}
-                      className={`absolute top-3 right-3 w-8 h-8 flex items-center justify-center bg-cream/90 border border-border/50 opacity-0 group-hover:opacity-100 transition-all duration-200 ${isFavorite(p.id) ? 'text-wine opacity-100' : 'text-muted hover:text-wine'}`}
+                      className={`absolute top-3 right-3 w-9 h-9 flex items-center justify-center bg-cream/90 border border-border/50 opacity-100 transition-all duration-200 lg:opacity-0 lg:group-hover:opacity-100 ${isFavorite(p.id) ? 'text-wine lg:opacity-100' : 'text-muted hover:text-wine'}`}
                     >
                       <HeartIcon filled={isFavorite(p.id)} />
                     </button>

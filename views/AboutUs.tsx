@@ -23,16 +23,16 @@ export default function AboutUs() {
   return (
     <div className="bg-cream">
       {/* Hero */}
-      <div className="relative overflow-hidden bg-blush" style={{ height: 'clamp(300px, 45vw, 520px)' }}>
+      <div className="relative h-[29rem] overflow-hidden bg-blush sm:h-[30rem] lg:h-[min(45vw,32.5rem)]">
         <img
           src="https://images.unsplash.com/photo-1742794555175-0e55d742d809?w=1600&h=600&fit=crop&auto=format"
           alt="Zul Luz brand story"
-          className="w-full h-full object-cover object-center"
+          className="h-full w-full object-cover object-[62%_center] sm:object-center"
         />
-        <div className="absolute inset-0 bg-dark/50" />
-        <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-5">
+        <div className="absolute inset-0 bg-gradient-to-t from-dark/80 via-dark/35 to-dark/10 sm:bg-dark/50" />
+        <div className="absolute inset-0 flex flex-col items-start justify-end px-6 pb-11 text-left sm:items-center sm:justify-center sm:px-5 sm:pb-0 sm:text-center">
           <p className="text-[10px] tracking-[0.22em] uppercase text-cream/70 mb-4 font-medium">Our Story</p>
-          <h1 className="font-display text-[clamp(2.5rem,5vw,4rem)] font-light text-cream">
+          <h1 className="max-w-[20rem] font-display text-[2.65rem] font-light leading-[1.04] text-cream sm:max-w-none sm:text-[clamp(2.5rem,5vw,4rem)] sm:leading-normal">
             Born in Colombia,<br /><em className="italic">for every woman</em>
           </h1>
         </div>
@@ -41,12 +41,12 @@ export default function AboutUs() {
       {/* Origin Story */}
       <section
         ref={s1.ref}
-        className={`py-20 lg:py-28 px-5 lg:px-10 max-w-4xl mx-auto transition-all duration-700 ${s1.inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
+        className={`mx-auto max-w-4xl px-6 py-14 transition-all duration-700 sm:px-8 sm:py-20 lg:px-10 lg:py-28 ${s1.inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
       >
-        <div className="text-center mb-16">
+        <div className="mb-8 text-left sm:mb-16 sm:text-center">
           <p className="text-[10px] tracking-[0.22em] uppercase text-wine mb-4 font-medium">The Beginning</p>
-          <h2 className="font-display text-3xl lg:text-4xl font-light text-dark mb-8 leading-[1.2]">
-            A brand inspired by <em className="italic">transformation</em>,<br />softness, and inner light
+          <h2 className="font-display text-[2rem] lg:text-4xl font-light text-dark mb-7 sm:mb-8 leading-[1.15] sm:leading-[1.2]">
+            A brand inspired by <em className="italic">transformation</em>,<span className="hidden sm:inline"><br /></span>{' '}softness, and inner light
           </h2>
           <p className="text-sm text-muted leading-[1.9] mb-6">
             Zul Luz was born from a simple but powerful belief: every woman deserves to feel radiant in her own skin — not just on special occasions, but in the quiet, intimate moments of everyday life. The moments of getting dressed in the morning, wrapping yourself in a robe, sliding into soft pajamas at night.
