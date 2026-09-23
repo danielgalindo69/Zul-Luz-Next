@@ -176,7 +176,10 @@ export default function SizeGuide() {
               { tip: 'Still unsure?', detail: 'Email us at hello@zulluz.shop — our team is happy to help you find your perfect size. We respond within 24 hours.' },
             ].map((t, i) => (
               <div key={i} className="flex gap-4 p-5 bg-blush-light">
-                <span className="text-wine font-display text-lg flex-shrink-0 mt-0.5">✦</span>
+                <svg className="h-4 w-4 text-wine flex-shrink-0 mt-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
+                  <path d="m12 3 1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8L12 3Z" />
+                  <path d="m19 14 .9 2.1L22 17l-2.1.9L19 20l-.9-2.1L16 17l2.1-.9L19 14Z" />
+                </svg>
                 <div>
                   <p className="text-xs font-medium text-dark mb-1.5">{t.tip}</p>
                   <p className="text-[11px] text-muted leading-[1.8]">{t.detail}</p>

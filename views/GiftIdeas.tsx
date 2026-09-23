@@ -4,6 +4,7 @@ import { useRef, useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useStore } from '@/context/StoreContext'
 import { HeartIcon } from '@/components/Layout'
+import { Gift, Mail, Truck } from 'lucide-react'
 
 function useInView(threshold = 0.1) {
   const ref = useRef<HTMLDivElement>(null)
@@ -62,12 +63,12 @@ export default function GiftIdeas() {
       <div className="bg-wine text-cream">
         <div className="max-w-7xl mx-auto px-5 lg:px-10 py-4 flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8 text-center">
           {[
-            { icon: '🎁', text: 'Complimentary gift wrapping on every order' },
-            { icon: '✉️', text: 'Handwritten gift message on request' },
-            { icon: '🚚', text: 'Express shipping available at checkout' },
+            { Icon: Gift, text: 'Complimentary gift wrapping on every order' },
+            { Icon: Mail, text: 'Handwritten gift message on request' },
+            { Icon: Truck, text: 'Express shipping available at checkout' },
           ].map(item => (
             <div key={item.text} className="flex items-center gap-2">
-              <span className="text-sm">{item.icon}</span>
+              <item.Icon className="h-4 w-4 flex-shrink-0" strokeWidth={1.5} aria-hidden="true" />
               <span className="text-[10px] tracking-[0.1em]">{item.text}</span>
             </div>
           ))}

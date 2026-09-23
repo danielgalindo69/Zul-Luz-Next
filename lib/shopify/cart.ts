@@ -13,6 +13,7 @@ type RawCart = {
     nodes: {
       id: string
       quantity: number
+      instructions?: { canUpdateQuantity: boolean; canRemove: boolean }
       cost: { totalAmount: RawMoney }
       merchandise: {
         id: string
@@ -28,7 +29,8 @@ type RawCart = {
 }
 
 type UserError = { field: string[] | null; message: string; code?: string }
-type CartPayload = { cart: RawCart | null; userErrors: UserError[] }
+type CartWarning = { code: string; message: string; target: string }
+type CartPayload = { cart: RawCart | null; userErrors: UserError[]; warnings?: CartWarning[] }
 
 const CART_FRAGMENT = `
   fragment CartFields on Cart {
@@ -44,6 +46,9 @@ const CART_FRAGMENT = `
         id
         quantity
         cost { totalAmount { amount currencyCode } }
+        ... on CartLine {
+          instructions { canUpdateQuantity canRemove }
+        }
         merchandise {
           ... on ProductVariant {
             id
@@ -89,6 +94,7 @@ const CART_LINES_UPDATE = `${CART_FRAGMENT}
     cartLinesUpdate(cartId: $cartId, lines: $lines) {
       cart { ...CartFields }
       userErrors { field message code }
+      warnings { code message target }
     }
   }
 `
@@ -116,6 +122,13 @@ export class CartNotFoundError extends Error {
   }
 }
 
+export class CartQuantityUnavailableError extends Error {
+  constructor(readonly lineId: string, message: string) {
+    super(message)
+    this.name = 'CartQuantityUnavailableError'
+  }
+}
+
 function money(value: RawMoney): CartMoney {
   return { amount: Number(value.amount), currencyCode: value.currencyCode }
 }
@@ -133,6 +146,8 @@ export function toStorefrontCart(cart: RawCart): StorefrontCart {
     unitPrice: money(line.merchandise.price),
     total: money(line.cost.totalAmount),
     availableForSale: line.merchandise.availableForSale,
+    canUpdateQuantity: line.instructions?.canUpdateQuantity ?? true,
+    canRemove: line.instructions?.canRemove ?? true,
   }))
 
   return {
@@ -182,7 +197,21 @@ export async function updateCartLine(cartId: string, lineId: string, quantity: n
     { cartId, lines: [{ id: lineId, quantity }] },
     { buyerIp, cache: 'no-store' },
   )
-  return requireCart(data.cartLinesUpdate)
+  const result = data.cartLinesUpdate
+  const cart = requireCart(result)
+  const updatedLine = cart.lines.nodes.find((line) => line.id === lineId)
+  if (updatedLine && updatedLine.quantity !== quantity) {
+    const stockWarning = result.warnings?.find((entry) =>
+      entry.code === 'MERCHANDISE_NOT_ENOUGH_STOCK' || entry.code === 'MERCHANDISE_OUT_OF_STOCK'
+    )
+    if (stockWarning) throw new CartQuantityUnavailableError(lineId, stockWarning.message)
+    const warning = result.warnings?.map((entry) => entry.message).join(' ')
+    throw new CartMutationError([{
+      field: null,
+      message: warning || 'Shopify kept the previous quantity. Please check availability and try again.',
+    }])
+  }
+  return cart
 }
 
 export async function removeCartLine(cartId: string, lineId: string, buyerIp?: string) {

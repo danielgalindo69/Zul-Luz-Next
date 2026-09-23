@@ -3,6 +3,7 @@ import {
   addCartLine,
   CartMutationError,
   CartNotFoundError,
+  CartQuantityUnavailableError,
   createCart,
   getCart,
   removeCartLine,
@@ -68,6 +69,9 @@ function clearCartCookie(response: NextResponse) {
 }
 
 function errorResponse(error: unknown) {
+  if (error instanceof CartQuantityUnavailableError) {
+    return json({ error: error.message, quantityLimitLineId: error.lineId }, 422)
+  }
   if (error instanceof CartMutationError) return json({ error: error.message }, 422)
   if (error instanceof CartNotFoundError) return json({ error: error.message }, 410)
   if (error instanceof StorefrontRequestError) return json({ error: error.message }, error.status)
@@ -120,7 +124,19 @@ export async function POST(request: NextRequest) {
     let cart
     if (currentCartId) {
       try {
-        cart = await addCartLine(currentCartId, variantId, quantity, buyerIp)
+        const existingCart = await getCart(currentCartId, buyerIp)
+        const existingLine = existingCart?.lines.nodes.find((line) => line.merchandise.id === variantId)
+        if (existingLine) {
+          const combinedQuantity = existingLine.quantity + quantity
+          if (combinedQuantity > 99) {
+            return json({ error: 'The maximum quantity of this item per order is 99.' }, 422)
+          }
+          cart = await updateCartLine(currentCartId, existingLine.id, combinedQuantity, buyerIp)
+        } else if (existingCart) {
+          cart = await addCartLine(currentCartId, variantId, quantity, buyerIp)
+        } else {
+          cart = await createCart(variantId, quantity, buyerIp)
+        }
       } catch (error) {
         if (!(error instanceof CartNotFoundError) && !(error instanceof CartMutationError && /cart.*(not|doesn)/i.test(error.message))) throw error
         cart = await createCart(variantId, quantity, buyerIp)

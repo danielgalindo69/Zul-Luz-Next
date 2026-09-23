@@ -6,8 +6,16 @@ import type { StorefrontCart, StorefrontCartLine } from '@/lib/shopify/cart-type
 
 type CartApiResponse = {
   error?: string
+  quantityLimitLineId?: string
   cart?: StorefrontCart | null
   checkoutUrl?: string
+}
+
+class CartRequestError extends Error {
+  constructor(message: string, readonly quantityLimitLineId?: string) {
+    super(message)
+    this.name = 'CartRequestError'
+  }
 }
 
 type StoreContextType = {
@@ -18,6 +26,7 @@ type StoreContextType = {
   cartLoading: boolean
   checkoutLoading: boolean
   cartError: string | null
+  quantityLimitLineIds: string[]
   addToCart: (variantId: string, quantity: number) => Promise<boolean>
   removeFromCart: (lineId: string) => Promise<boolean>
   updateQuantity: (lineId: string, qty: number) => Promise<boolean>
@@ -48,7 +57,9 @@ async function parseCartResponse(response: Response): Promise<CartApiResponse> {
   } catch {
     throw new Error('El servidor devolvió una respuesta no válida.')
   }
-  if (!response.ok) throw new Error(payload.error || 'No fue posible actualizar el carrito.')
+  if (!response.ok) {
+    throw new CartRequestError(payload.error || 'No fue posible actualizar el carrito.', payload.quantityLimitLineId)
+  }
   return payload
 }
 
@@ -59,6 +70,7 @@ export function StoreProvider({ children, products }: { children: ReactNode; pro
   const [cartLoading, setCartLoading] = useState(false)
   const [checkoutLoading, setCheckoutLoading] = useState(false)
   const [cartError, setCartError] = useState<string | null>(null)
+  const [quantityLimitLineIds, setQuantityLimitLineIds] = useState<string[]>([])
   const cartLoaded = useRef(false)
   const cartMutationPending = useRef(false)
   const checkoutPending = useRef(false)
@@ -99,9 +111,15 @@ export function StoreProvider({ children, products }: { children: ReactNode; pro
         body: JSON.stringify(body),
       }))
       setCartState(payload.cart ?? EMPTY_CART)
+      if (method === 'PATCH' && typeof body.lineId === 'string') {
+        setQuantityLimitLineIds((ids) => ids.filter((id) => id !== body.lineId))
+      }
       return true
     } catch (error) {
       setCartError(error instanceof Error ? error.message : 'No fue posible actualizar el carrito.')
+      if (error instanceof CartRequestError && error.quantityLimitLineId) {
+        setQuantityLimitLineIds((ids) => ids.includes(error.quantityLimitLineId!) ? ids : [...ids, error.quantityLimitLineId!])
+      }
       return false
     } finally {
       cartMutationPending.current = false
@@ -172,6 +190,7 @@ export function StoreProvider({ children, products }: { children: ReactNode; pro
       cartLoading,
       checkoutLoading,
       cartError,
+      quantityLimitLineIds,
       addToCart,
       removeFromCart,
       updateQuantity,

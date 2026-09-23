@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useStore } from '@/context/StoreContext'
 import { HeartIcon } from '@/components/Layout'
 import { useScrollAnimation } from '@/hooks/useScrollAnimation'
+import { Sparkles } from 'lucide-react'
 
 function useInView(threshold = 0.1) {
   const ref = useRef<HTMLDivElement>(null)
@@ -94,7 +95,14 @@ export default function Home() {
           <div className="absolute inset-0 bg-gradient-to-r from-cream/20 via-transparent to-transparent pointer-events-none" />
           <div className="absolute bottom-10 left-6 bg-cream/90 backdrop-blur-sm px-4 py-3 border border-border/50">
             <p className="text-[9px] tracking-[0.18em] uppercase text-muted">Made in</p>
-            <p className="font-display text-sm text-dark font-light mt-0.5">Colombia 🇨🇴</p>
+            <p className="font-display text-sm text-dark font-light mt-0.5 inline-flex items-center gap-1.5">
+              Colombia
+              <svg viewBox="0 0 30 20" className="h-3.5 w-[21px] rounded-[2px] shadow-sm" aria-hidden="true">
+                <rect width="30" height="10" fill="#FCD116" />
+                <rect y="10" width="30" height="5" fill="#003893" />
+                <rect y="15" width="30" height="5" fill="#CE1126" />
+              </svg>
+            </p>
           </div>
         </div>
       </section>
@@ -290,7 +298,9 @@ export default function Home() {
         <p className="text-xs text-muted mb-9 leading-[1.9]">Be the first to know about new arrivals, exclusive offers, and intimate moments from Colombia.</p>
         {subscribed ? (
           <div className="border border-wine/30 bg-wine/5 px-6 py-5">
-            <p className="text-sm font-display font-light text-wine">Welcome to Zul Luz. ✦</p>
+            <p className="inline-flex items-center gap-1.5 text-sm font-display font-light text-wine">
+              Welcome to Zul Luz. <Sparkles className="h-3.5 w-3.5" strokeWidth={1.5} aria-hidden="true" />
+            </p>
             <p className="text-[10px] text-muted mt-1.5 tracking-wide">You'll hear from us soon.</p>
           </div>
         ) : (

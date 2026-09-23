@@ -1,10 +1,11 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useStore } from '@/context/StoreContext'
 import { HeartIcon } from '@/components/Layout'
 import type { Product } from '@/lib/types'
+import { MapPin, RotateCcw, Sparkles, Truck } from 'lucide-react'
 
 const StarIcon = ({ filled = true }: { filled?: boolean }) => (
   <svg width="12" height="12" viewBox="0 0 24 24" fill={filled ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.5">
@@ -22,34 +23,52 @@ export default function ProductDetail({ product }: { product: Product }) {
   const { products, addToCart, cartLoading, toggleFavorite, isFavorite } = useStore()
 
   const [activeImg, setActiveImg] = useState(0)
-  const [selectedColor, setSelectedColor] = useState(0)
+  const [selectedColor, setSelectedColor] = useState<number | null>(null)
   const [selectedSize, setSelectedSize] = useState('')
   const [quantity, setQuantity] = useState(1)
   const [openAccordion, setOpenAccordion] = useState<string | null>('description')
   const [addedFeedback, setAddedFeedback] = useState(false)
+  const [colorError, setColorError] = useState(false)
   const [sizeError, setSizeError] = useState(false)
   const [variantError, setVariantError] = useState(false)
-  const color = product.colors[selectedColor]?.name ?? 'Standard'
-  const size = selectedSize || product.sizes[0]
+
+  useEffect(() => {
+    setActiveImg(0)
+    setSelectedColor(null)
+    setSelectedSize('')
+    setQuantity(1)
+    setColorError(false)
+    setSizeError(false)
+    setVariantError(false)
+    setAddedFeedback(false)
+  }, [product.id])
+
+  const requiresColor = Boolean(product.colorOptionName)
+  const requiresSize = product.sizes.length > 0 && product.sizes[0] !== 'One Size'
+  const color = requiresColor
+    ? selectedColor === null ? null : product.colors[selectedColor]?.name ?? null
+    : 'Standard'
+  const size = requiresSize ? selectedSize || null : product.sizes[0] ?? 'One Size'
   const selectedVariant = product.variants?.find((variant) =>
-    (!product.colorOptionName || variant.selectedOptions.some((option) =>
-      option.name === product.colorOptionName && option.value === color)) &&
-    (!product.sizeOptionName || variant.selectedOptions.some((option) =>
-      option.name === product.sizeOptionName && option.value === size))
+    (!product.colorOptionName || (color !== null && variant.selectedOptions.some((option) =>
+      option.name === product.colorOptionName && option.value === color))) &&
+    (!product.sizeOptionName || (size !== null && variant.selectedOptions.some((option) =>
+      option.name === product.sizeOptionName && option.value === size)))
   )
   const displayPrice = selectedVariant?.price ?? product.price
 
   const handleAddToCart = async () => {
-    if (!selectedSize && product.sizes[0] !== 'One Size') {
-      setSizeError(true)
-      return
-    }
-    setSizeError(false)
+    const missingColor = requiresColor && color === null
+    const missingSize = requiresSize && !selectedSize
+    setColorError(missingColor)
+    setSizeError(missingSize)
+    setVariantError(false)
+    if (missingColor || missingSize) return
+
     if (!selectedVariant || !selectedVariant.availableForSale) {
       setVariantError(true)
       return
     }
-    setVariantError(false)
     const added = await addToCart(selectedVariant.id, quantity)
     if (added) {
       setAddedFeedback(true)
@@ -172,14 +191,16 @@ export default function ProductDetail({ product }: { product: Product }) {
             {product.colorOptionName && <div className="mb-6">
               <div className="flex items-center justify-between mb-3">
                 <span className="text-[10px] tracking-[0.14em] uppercase text-dark font-medium">Color</span>
-                <span className="text-xs text-muted">{color}</span>
+                <span className="text-xs text-muted">{color ?? 'Choose a color'}</span>
               </div>
               <div className="flex items-center gap-2.5 flex-wrap">
                 {product.colors.map((color, i) => (
                   <button
                     key={color.name}
-                    onClick={() => { setSelectedColor(i); setVariantError(false) }}
+                    onClick={() => { setSelectedColor(i); setColorError(false); setVariantError(false) }}
                     title={color.name}
+                    aria-label={`Select ${color.name}`}
+                    aria-pressed={selectedColor === i}
                     className={`relative w-8 h-8 rounded-full border-2 transition-all duration-200 ${selectedColor === i ? 'border-wine scale-110' : 'border-border hover:border-muted'}`}
                     style={{ backgroundColor: color.hex }}
                   >
@@ -191,15 +212,14 @@ export default function ProductDetail({ product }: { product: Product }) {
                   </button>
                 ))}
               </div>
+              {colorError && <p className="mt-2 text-xs text-wine" role="alert">Please select a color before adding this item to your bag.</p>}
             </div>}
 
             {/* Size picker */}
             {product.sizes[0] !== 'One Size' && (
               <div className="mb-6">
                 <div className="flex items-center justify-between mb-3">
-                  <span className={`text-[10px] tracking-[0.14em] uppercase font-medium ${sizeError ? 'text-wine' : 'text-dark'}`}>
-                    Size {sizeError && <span className="font-normal normal-case tracking-normal">— Please select a size</span>}
-                  </span>
+                  <span className={`text-[10px] tracking-[0.14em] uppercase font-medium ${sizeError ? 'text-wine' : 'text-dark'}`}>Size</span>
                   <Link href="/size-guide" className="text-[10px] text-wine underline underline-offset-2 hover:text-dark transition-colors">
                     Size Guide
                   </Link>
@@ -209,16 +229,18 @@ export default function ProductDetail({ product }: { product: Product }) {
                     <button
                       key={size}
                       onClick={() => { setSelectedSize(size); setSizeError(false); setVariantError(false) }}
+                      aria-pressed={selectedSize === size}
                       className={`min-w-[44px] h-10 px-3 border text-xs transition-all duration-200 font-medium ${selectedSize === size ? 'border-wine bg-wine text-cream' : 'border-border text-dark hover:border-dark'}`}
                     >
                       {size}
                     </button>
                   ))}
                 </div>
+                {sizeError && <p className="mt-2 text-xs text-wine" role="alert">Please select a size before adding this item to your bag.</p>}
               </div>
             )}
             {variantError && (
-              <p className="mb-5 text-xs text-wine" role="alert">Esta combinación no está disponible. Prueba otra talla o color.</p>
+              <p className="mb-5 text-xs text-wine" role="alert">This combination is unavailable. Please try another size or color.</p>
             )}
 
             {/* Quantity */}
@@ -232,7 +254,8 @@ export default function ProductDetail({ product }: { product: Product }) {
                 <span className="w-12 h-10 border-t border-b border-border flex items-center justify-center text-sm text-dark font-medium">{quantity}</span>
                 <button
                   onClick={() => setQuantity(q => q + 1)}
-                  className="w-10 h-10 border border-border flex items-center justify-center text-dark hover:border-wine hover:text-wine transition-colors text-sm"
+                  disabled={quantity >= 99}
+                  className="w-10 h-10 border border-border flex items-center justify-center text-dark hover:border-wine hover:text-wine transition-colors text-sm disabled:cursor-not-allowed disabled:opacity-40"
                 >+</button>
               </div>
             </div>
@@ -258,13 +281,13 @@ export default function ProductDetail({ product }: { product: Product }) {
             {/* Trust badges */}
             <div className="flex flex-wrap gap-4 mb-8 pb-8 border-b border-border">
               {[
-                { icon: '🚚', label: 'Free shipping over $150' },
-                { icon: '↩', label: 'Easy 30-day returns' },
-                { icon: '🇨🇴', label: 'Made in Colombia' },
-              ].map(badge => (
-                <div key={badge.label} className="flex items-center gap-2">
-                  <span className="text-sm">{badge.icon}</span>
-                  <span className="text-[10px] text-muted tracking-wide">{badge.label}</span>
+                { Icon: Truck, label: 'Free shipping over $150' },
+                { Icon: RotateCcw, label: 'Easy 30-day returns' },
+                { Icon: MapPin, label: 'Made in Colombia' },
+              ].map(({ Icon, label }) => (
+                <div key={label} className="flex items-center gap-2">
+                  <Icon className="h-4 w-4 text-wine" strokeWidth={1.5} aria-hidden="true" />
+                  <span className="text-[10px] text-muted tracking-wide">{label}</span>
                 </div>
               ))}
             </div>
@@ -288,7 +311,7 @@ export default function ProductDetail({ product }: { product: Product }) {
                   <ul className="space-y-2">
                     {product.usageGuide.map((tip, i) => (
                       <li key={i} className="flex gap-3 text-xs text-muted leading-[1.8]">
-                        <span className="text-wine flex-shrink-0 mt-0.5">✦</span>
+                        <Sparkles className="h-3.5 w-3.5 text-wine flex-shrink-0 mt-0.5" aria-hidden="true" />
                         {tip}
                       </li>
                     ))}

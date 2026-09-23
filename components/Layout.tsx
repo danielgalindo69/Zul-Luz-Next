@@ -6,7 +6,7 @@ import { usePathname, useRouter } from 'next/navigation'
 import { useStore } from '@/context/StoreContext'
 import type { Product } from '@/lib/types'
 import { NAV_DATA } from './MegaMenu'
-import { ChevronDown, ChevronRight } from 'lucide-react'
+import { ChevronDown, ChevronRight, Truck } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ActiveLink } from './ActiveLink'
 
@@ -52,6 +52,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     cartLoading,
     checkoutLoading,
     cartError,
+    quantityLimitLineIds,
     checkout,
     updateQuantity,
     removeFromCart,
@@ -711,7 +712,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                         </Link>
                         <button
                           onClick={() => void removeFromCart(item.id)}
-                          disabled={cartLoading}
+                          type="button"
+                          disabled={cartLoading || !item.canRemove}
                           className="text-muted hover:text-wine p-0.5 disabled:cursor-wait disabled:opacity-40"
                           aria-label="Remove item"
                         >
@@ -725,6 +727,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                         {item.selectedOptions.map((option) => `${option.name}: ${option.value}`).join(' • ') || item.variantTitle}
                       </p>
                       {!item.availableForSale && <p className="mt-1 text-[10px] text-wine">Currently unavailable</p>}
+                      {!item.canUpdateQuantity && <p className="mt-1 text-[10px] text-muted">Quantity can’t be changed for this item.</p>}
+                      {quantityLimitLineIds.includes(item.id) && <p className="mt-1 text-[10px] text-wine">Maximum available quantity reached.</p>}
                     </div>
 
                     <div className="flex items-center justify-between mt-3">
@@ -732,16 +736,18 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                       <div className="flex items-center border border-border bg-cream-light rounded-sm">
                         <button
                           onClick={() => void updateQuantity(item.id, item.quantity - 1)}
-                          disabled={cartLoading}
+                          type="button"
+                          disabled={cartLoading || !item.canUpdateQuantity}
                           className="w-7 h-7 flex items-center justify-center text-muted hover:text-dark transition-colors font-light text-sm disabled:cursor-wait disabled:opacity-40"
                           aria-label={`Decrease quantity of ${item.productTitle}`}
                         >
                           &minus;
                         </button>
-                        <span className="w-8 text-center text-xs font-medium text-dark select-none">{item.quantity}</span>
+                        <span className="w-8 text-center text-xs font-medium text-dark select-none" aria-live="polite">{item.quantity}</span>
                         <button
                           onClick={() => void updateQuantity(item.id, item.quantity + 1)}
-                          disabled={cartLoading || item.quantity >= 99}
+                          type="button"
+                          disabled={cartLoading || !item.canUpdateQuantity || item.quantity >= 99 || quantityLimitLineIds.includes(item.id)}
                           className="w-7 h-7 flex items-center justify-center text-muted hover:text-dark transition-colors font-light text-sm disabled:cursor-wait disabled:opacity-40"
                           aria-label={`Increase quantity of ${item.productTitle}`}
                         >
@@ -767,7 +773,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               <div className="space-y-1.5">
                 <div className="flex justify-between text-[10px] tracking-wider font-light">
                   {cartTotal >= freeShippingThreshold ? (
-                    <span className="text-wine font-medium">You qualify for free shipping! 🚚</span>
+                    <span className="inline-flex items-center gap-1.5 text-wine font-medium">
+                      You qualify for free shipping! <Truck className="h-3.5 w-3.5" strokeWidth={1.7} aria-hidden="true" />
+                    </span>
                   ) : (
                     <span>
                       Spend <span className="font-semibold">{formatMoney(amountToFreeShipping, cartCurrencyCode)}</span> more for Free Shipping

@@ -15,6 +15,8 @@ export type StorefrontCartLine = {
   unitPrice: CartMoney
   total: CartMoney
   availableForSale: boolean
+  canUpdateQuantity: boolean
+  canRemove: boolean
 }
 
 export type StorefrontCart = {
