@@ -876,8 +876,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <ul className="space-y-2 text-xs font-light">
               <li><Link href="/size-guide" className="hover:text-wine transition-colors">Size Guide</Link></li>
               <li><Link href="/about" className="hover:text-wine transition-colors">Our Story & Craft</Link></li>
-              <li><span className="hover:text-wine transition-colors cursor-pointer">Shipping & Returns</span></li>
-              <li><span className="hover:text-wine transition-colors cursor-pointer">Contact Us</span></li>
+              <li><Link href="/shipping-policy" className="hover:text-wine transition-colors">Shipping Policy</Link></li>
+              <li><Link href="/return-policy" className="hover:text-wine transition-colors">Returns & Refunds</Link></li>
+              <li><a href="mailto:info@zulluz.shop" className="hover:text-wine transition-colors">Contact Us</a></li>
             </ul>
           </div>
 
@@ -904,8 +905,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             &copy; {new Date().getFullYear()} Zul Luz Lingerie. All Rights Reserved. Made in Colombia.
           </div>
           <div className="flex flex-wrap gap-x-4 gap-y-2">
-            <span className="hover:text-cream transition-colors cursor-pointer">Privacy Policy</span>
-            <span className="hover:text-cream transition-colors cursor-pointer">Terms of Service</span>
+            <Link href="/privacy-policy" className="hover:text-cream transition-colors">Privacy Policy</Link>
+            <Link href="/terms-and-conditions" className="hover:text-cream transition-colors">Terms of Service</Link>
           </div>
         </div>
       </footer>

@@ -620,7 +620,7 @@ La migración solo se considera aceptada cuando:
 - Las pruebas existentes pasan o los fallos preexistentes están diferenciados y documentados.
 - Las rutas principales funcionan directamente y mediante navegación interna.
 - Recargar una ruta dinámica no produce error.
-- No existen errores de hidratación conocidos.
+- No existen errores de hidratación conocidos. 
 - No se han expuesto secretos.
 - No se ha introducido Shopify prematuramente.
 - No se ha creado un backend NestJS.
