@@ -4,7 +4,7 @@ import CategoryPage from '@/views/CategoryPage'
 const subcategories: Record<string, Set<string>> = {
   lingerie: new Set(['bras', 'panties', 'sets']),
   sleepwear: new Set(['pajama-sets', 'robes', 'nightgowns']),
-  lifestyle: new Set(['home-fragrance', 'scrunchies', 'accessories']),
+  lifestyle: new Set(['home-fragrance', 'scrunchies', 'accessories', 'bags']),
 }
 
 export default async function Page({ params }: { params: Promise<{ category: string; sub: string }> }) {

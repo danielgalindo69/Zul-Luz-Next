@@ -45,9 +45,9 @@ export const NAV_DATA = [
       {
         title: 'Explore lifestyle',
         items: [
-          { label: 'Home fragrance', href: '/lifestyle/home-fragrance' },
+          { label: 'Wax', href: '/lifestyle/home-fragrance' },
           { label: 'Scrunchies', href: '/lifestyle/scrunchies' },
-          { label: 'Accessories', href: '/lifestyle/accessories' },
+          { label: 'Bags', href: '/lifestyle/bags' },
         ],
       },
     ],

@@ -18,6 +18,14 @@ function useInView(threshold = 0.1) {
 }
 
 type SortOption = 'featured' | 'price-asc' | 'price-desc' | 'newest'
+type LifestyleFilter = 'all' | 'home-fragrance' | 'scrunchies' | 'bags'
+
+const LIFESTYLE_FILTERS: { value: LifestyleFilter; label: string }[] = [
+  { value: 'all', label: 'All' },
+  { value: 'home-fragrance', label: 'Wax' },
+  { value: 'scrunchies', label: 'Scrunchies' },
+  { value: 'bags', label: 'Bags' },
+]
 
 const getPriceValue = (value: string) => {
   if (!value.trim()) return null
@@ -63,7 +71,7 @@ const CATEGORY_META: Record<string, { title: string; subtitle: string; hero: str
     description: 'Fragrance, accessories, and the small luxuries that complete a Zul Luz ritual — from morning to night.',
   },
   'home-fragrance': {
-    title: 'Home Fragrance',
+    title: 'Wax & Fragrance',
     subtitle: 'Scent your sanctuary',
     hero: 'https://images.unsplash.com/photo-1778777366990-62cd674e481a?w=1400&h=500&fit=crop&auto=format',
     description: 'Botanically inspired wax air fresheners that bring a soft, lasting scent to your wardrobe, bedroom, and living spaces.',
@@ -73,6 +81,12 @@ const CATEGORY_META: Record<string, { title: string; subtitle: string; hero: str
     subtitle: 'A small daily luxury',
     hero: 'https://images.unsplash.com/photo-1742794555175-0e55d742d809?w=1400&h=500&fit=crop&auto=format',
     description: 'Hand-stitched satin scrunchies that protect your hair while keeping your style effortlessly polished.',
+  },
+  bags: {
+    title: 'Bags',
+    subtitle: 'Handmade Colombian craft',
+    hero: 'https://images.unsplash.com/photo-1594223274512-ad4803739b7c?w=1400&h=500&fit=crop&auto=format',
+    description: 'Handmade Wayuu bags that bring color, craft, and a meaningful finishing touch to your everyday ritual.',
   },
   'best-sellers': {
     title: 'Best Sellers',
@@ -97,6 +111,7 @@ export default function CategoryPage() {
   const [selectedSizes, setSelectedSizes] = useState<string[]>([])
   const [minPrice, setMinPrice] = useState('')
   const [maxPrice, setMaxPrice] = useState('')
+  const [selectedLifestyleFilter, setSelectedLifestyleFilter] = useState<LifestyleFilter>('all')
   const [hoveredId, setHoveredId] = useState<string | null>(null)
   const header = useInView(0.05)
   const grid = useInView(0.05)
@@ -137,14 +152,16 @@ export default function CategoryPage() {
     setSelectedSizes([])
     setMinPrice('')
     setMaxPrice('')
+    setSelectedLifestyleFilter('all')
   }
 
   let products = scopedProducts.filter((product) => {
+    const matchesLifestyleFilter = slug !== 'lifestyle' || selectedLifestyleFilter === 'all' || product.subcategory === selectedLifestyleFilter
     const matchesColor = selectedColors.length === 0 || product.colors.some((color) => selectedColors.includes(color.name))
     const matchesSize = selectedSizes.length === 0 || product.sizes.some((size) => selectedSizes.includes(size))
     const matchesMinimumPrice = minimumPrice === null || product.price >= minimumPrice
     const matchesMaximumPrice = maximumPrice === null || product.price <= maximumPrice
-    return matchesColor && matchesSize && matchesMinimumPrice && matchesMaximumPrice
+    return matchesLifestyleFilter && matchesColor && matchesSize && matchesMinimumPrice && matchesMaximumPrice
   })
 
   // Sort
@@ -218,6 +235,20 @@ export default function CategoryPage() {
       <div className="max-w-7xl mx-auto px-5 lg:px-10 py-5 border-y border-border/55">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex flex-wrap items-center gap-x-6 gap-y-4">
+            {slug === 'lifestyle' && (
+              <fieldset className="flex flex-wrap items-center gap-1.5" aria-label="Filter lifestyle products">
+                <legend className="sr-only">Lifestyle category</legend>
+                <span className="mr-1 text-[10px] font-medium uppercase tracking-[0.14em] text-muted">Type</span>
+                {LIFESTYLE_FILTERS.map((filter) => {
+                  const isSelected = selectedLifestyleFilter === filter.value
+                  return (
+                    <button key={filter.value} type="button" onClick={() => setSelectedLifestyleFilter(filter.value)} aria-pressed={isSelected} className={`border px-2.5 py-1 text-[10px] uppercase tracking-[0.1em] transition-colors focus:outline-none focus:ring-2 focus:ring-wine focus:ring-offset-2 ${isSelected ? 'border-wine bg-wine text-cream' : 'border-border text-dark hover:border-wine hover:text-wine'}`}>
+                      {filter.label}
+                    </button>
+                  )
+                })}
+              </fieldset>
+            )}
             <fieldset className="flex items-center gap-2" aria-label="Filter by price">
               <legend className="sr-only">Price</legend>
               <span className="text-[10px] font-medium uppercase tracking-[0.14em] text-muted">Price</span>
@@ -257,7 +288,7 @@ export default function CategoryPage() {
             )}
           </div>
 
-          {(selectedColors.length > 0 || selectedSizes.length > 0 || minPrice || maxPrice) && (
+          {(selectedLifestyleFilter !== 'all' || selectedColors.length > 0 || selectedSizes.length > 0 || minPrice || maxPrice) && (
             <button type="button" onClick={clearFilters} className="text-left text-[10px] font-medium uppercase tracking-[0.14em] text-wine underline-offset-4 hover:underline lg:text-right">
               Clear filters
             </button>

@@ -77,6 +77,9 @@ function classify(product: ShopifyProduct): Pick<Product, 'category' | 'subcateg
   if (has('scrunchies') || /scrunchie/.test(type + ' ' + title)) {
     return { category: 'lifestyle', subcategory: 'scrunchies' }
   }
+  if (has('bags') || has('bag') || /\bbags?\b|wayuu/.test(type + ' ' + title)) {
+    return { category: 'lifestyle', subcategory: 'bags' }
+  }
   if (has('home-fragrance') || /wax|fragrance|scent/.test(type + ' ' + title)) {
     return { category: 'lifestyle', subcategory: 'home-fragrance' }
   }
@@ -148,7 +151,12 @@ export const getCatalogProducts = cache(async (): Promise<Product[]> => {
   let cursor: string | null = null
   for (let page = 0; page < 10; page += 1) {
     const result = await queryProducts(cursor)
-    products.push(...result.products.nodes.map(mapProduct))
+    // Products without a positive sale price cannot be purchased. Keeping them
+    // out of the storefront also prevents incomplete Shopify drafts from being
+    // presented as $0 lifestyle products.
+    products.push(...result.products.nodes
+      .map(mapProduct)
+      .filter((product) => Number.isFinite(product.price) && product.price > 0))
     if (!result.products.pageInfo.hasNextPage) return products
     cursor = result.products.pageInfo.endCursor
     if (!cursor) throw new Error('Shopify no devolvió el cursor para continuar el catálogo.')
