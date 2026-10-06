@@ -13,9 +13,9 @@ export const metadata: Metadata = {
   alternates: { canonical: '/' },
   robots: { index: true, follow: true },
   icons: {
-    icon: '/favicon.ico',
-    shortcut: '/favicon.ico',
-    apple: '/favicon.ico',
+    icon: [{ url: '/zulluz-favicon.png', type: 'image/png', sizes: '512x512' }],
+    shortcut: [{ url: '/zulluz-favicon.png', type: 'image/png' }],
+    apple: [{ url: '/zulluz-favicon.png', sizes: '180x180', type: 'image/png' }],
   },
   openGraph: {
     title: 'Zul Luz | Timeless Comfort & Elegance',
@@ -44,7 +44,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
             '@type': 'Organization',
             name: 'Zul Luz',
             url: SITE_URL,
-            logo: `${SITE_URL}/favicon.ico`,
+            logo: `${SITE_URL}/zulluz-favicon.png`,
           },
           {
             '@context': 'https://schema.org',
