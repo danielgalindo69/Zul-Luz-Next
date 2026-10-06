@@ -5,6 +5,7 @@ import { termsOfService } from '@/lib/legal-policies'
 export const metadata: Metadata = {
   title: 'Terms of Service',
   description: 'Terms of Service for the Zul Luz storefront.',
+  alternates: { canonical: '/terms-and-conditions' },
 }
 
 export default function TermsAndConditionsPage() {

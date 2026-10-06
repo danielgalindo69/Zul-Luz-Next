@@ -5,6 +5,7 @@ import { returnPolicy } from '@/lib/legal-policies'
 export const metadata: Metadata = {
   title: 'Return & Refund Policy',
   description: 'Return and Refund Policy for the Zul Luz storefront.',
+  alternates: { canonical: '/return-policy' },
 }
 
 export default function ReturnPolicyPage() {

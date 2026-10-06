@@ -1,5 +1,9 @@
+import type { Metadata } from 'next'
 import Profile from '@/views/Profile'
 
-export const metadata = { title: 'Profile' }
+export const metadata: Metadata = {
+  title: 'Profile',
+  robots: { index: false, follow: false },
+}
 
 export default function Page() { return <Profile /> }
