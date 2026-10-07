@@ -9,6 +9,8 @@ import { NAV_DATA } from './MegaMenu'
 import { ChevronDown, ChevronRight, Truck } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ActiveLink } from './ActiveLink'
+import { WhatsAppFloatingButton } from './WhatsApp'
+import { createWhatsAppUrl } from '@/lib/whatsapp'
 
 // Vector Heart Icon used throughout the product grids and product pages.
 export function HeartIcon({ filled, className = '' }: { filled: boolean; className?: string }) {
@@ -908,6 +910,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               <li><Link href="/shipping-policy" className="hover:text-wine transition-colors">Shipping Policy</Link></li>
               <li><Link href="/return-policy" className="hover:text-wine transition-colors">Returns & Refunds</Link></li>
               <li><a href="mailto:info@zulluz.shop" className="hover:text-wine transition-colors">Contact Us</a></li>
+              <li><a href={createWhatsAppUrl('Hi Zul Luz, I’d like help with a product or my order.')} target="_blank" rel="noopener noreferrer" className="hover:text-wine transition-colors">Chat on WhatsApp</a></li>
             </ul>
           </div>
 
@@ -939,6 +942,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           </div>
         </div>
       </footer>
+
+      <WhatsAppFloatingButton />
     </div>
   )
 }

@@ -6,6 +6,8 @@ import { useStore } from '@/context/StoreContext'
 import { HeartIcon } from '@/components/Layout'
 import type { Product } from '@/lib/types'
 import { MapPin, RotateCcw, Sparkles, Truck } from 'lucide-react'
+import { WhatsAppIcon } from '@/components/WhatsApp'
+import { createProductWhatsAppUrl } from '@/lib/whatsapp'
 
 const StarIcon = ({ filled = true }: { filled?: boolean }) => (
   <svg width="12" height="12" viewBox="0 0 24 24" fill={filled ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.5">
@@ -277,6 +279,16 @@ export default function ProductDetail({ product }: { product: Product }) {
                 <HeartIcon filled={isFavorite(product.id)} />
               </button>
             </div>
+
+            <a
+              href={createProductWhatsAppUrl(product.name)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mb-7 flex items-center justify-center gap-2 border border-border px-4 py-3 text-[10px] font-medium tracking-[0.12em] text-dark transition-colors hover:border-[#25D366] hover:text-wine focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-wine"
+            >
+              <WhatsAppIcon className="h-4 w-4 text-[#25D366]" />
+              Need help with this item? Chat with us
+            </a>
 
             {/* Trust badges */}
             <div className="flex flex-wrap gap-4 mb-8 pb-8 border-b border-border">
