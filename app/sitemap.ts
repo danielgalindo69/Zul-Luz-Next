@@ -29,6 +29,19 @@ const staticRoutes: Array<{ path: string; changeFrequency: MetadataRoute.Sitemap
   { path: '/return-policy', changeFrequency: 'yearly', priority: 0.3 },
 ]
 
+function getSitemapImageUrls(images: string[]) {
+  return images.filter((image) => {
+    if (!image || image.includes('/product-placeholder.svg')) return false
+
+    try {
+      const url = new URL(image)
+      return url.protocol === 'https:' || url.protocol === 'http:'
+    } catch {
+      return false
+    }
+  })
+}
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   let products: Awaited<ReturnType<typeof catalog.getProducts>> | null = null
   try {
@@ -56,7 +69,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       url: absoluteUrl(`/product/${product.id}`),
       changeFrequency: 'weekly' as const,
       priority: 0.7,
-      images: product.images,
+      images: getSitemapImageUrls(product.images),
     })))
   }
 
