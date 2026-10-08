@@ -120,7 +120,7 @@ export default function ProductDetail({ product }: { product: Product }) {
                   onClick={() => setActiveImg(i)}
                   className={`flex-shrink-0 w-16 h-20 sm:w-16 sm:h-20 overflow-hidden bg-blush border-2 transition-all duration-200 ${activeImg === i ? 'border-wine' : 'border-transparent hover:border-border'}`}
                 >
-                  <img src={img} alt={`${product.name} view ${i + 1}`} className="w-full h-full object-cover object-center" />
+                  <img src={img} alt={product.imageAlts?.[i] ?? `${product.name} view ${i + 1}`} className="w-full h-full object-cover object-center" />
                 </button>
               ))}
             </div>
@@ -130,7 +130,7 @@ export default function ProductDetail({ product }: { product: Product }) {
               <img
                 key={activeImg}
                 src={product.images[activeImg]}
-                alt={product.name}
+                alt={product.imageAlts?.[activeImg] ?? `${product.name} view ${activeImg + 1}`}
                 className="w-full h-full object-cover object-center transition-opacity duration-300"
               />
               {product.tag && (
@@ -363,7 +363,7 @@ export default function ProductDetail({ product }: { product: Product }) {
                 <div key={p.id} className="group">
                   <div className="relative overflow-hidden bg-blush mb-4" style={{ aspectRatio: '3/4' }}>
                     <Link href={`/product/${p.id}`}>
-                      <img src={p.images[0]} alt={p.name} className="w-full h-full object-cover object-center group-hover:scale-[1.05] transition-transform duration-500" />
+                      <img src={p.images[0]} alt={p.imageAlts?.[0] ?? p.name} className="w-full h-full object-cover object-center group-hover:scale-[1.05] transition-transform duration-500" />
                     </Link>
                     <button
                       onClick={() => toggleFavorite(p)}

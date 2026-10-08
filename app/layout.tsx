@@ -8,8 +8,8 @@ import { SITE_URL } from '@/lib/site'
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  title: { default: 'Zul Luz | Timeless Comfort & Elegance', template: '%s | Zul Luz' },
-  description: 'Discover luxury lingerie, sleepwear, and thoughtful lifestyle pieces by Zul Luz. Timeless comfort and elegance, designed for everyday rituals.',
+  title: { default: 'Luxury Lingerie & Sleepwear | Zul Luz', template: '%s | Zul Luz' },
+  description: 'Shop lace bras, lingerie, women’s sleepwear, and artisan accessories at Zul Luz, a Colombian-founded brand focused on comfort and everyday rituals.',
   alternates: { canonical: '/' },
   robots: { index: true, follow: true },
   icons: {
@@ -18,8 +18,8 @@ export const metadata: Metadata = {
     apple: [{ url: '/zulluz-favicon.png', sizes: '180x180', type: 'image/png' }],
   },
   openGraph: {
-    title: 'Zul Luz | Timeless Comfort & Elegance',
-    description: 'Luxury lingerie, sleepwear, and lifestyle pieces designed for everyday rituals.',
+    title: 'Luxury Lingerie & Sleepwear | Zul Luz',
+    description: 'Shop lace bras, lingerie, women’s sleepwear, and artisan accessories from a Colombian-founded brand.',
     url: SITE_URL,
     siteName: 'Zul Luz',
     locale: 'en_US',
@@ -27,8 +27,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Zul Luz | Timeless Comfort & Elegance',
-    description: 'Luxury lingerie, sleepwear, and lifestyle pieces designed for everyday rituals.',
+    title: 'Luxury Lingerie & Sleepwear | Zul Luz',
+    description: 'Shop lace bras, lingerie, women’s sleepwear, and artisan accessories from a Colombian-founded brand.',
   },
 };
 

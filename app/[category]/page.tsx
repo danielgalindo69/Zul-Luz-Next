@@ -5,20 +5,20 @@ import CategoryPage from '@/views/CategoryPage'
 const categories = new Set(['lingerie', 'sleepwear', 'lifestyle', 'best-sellers'])
 const metadataByCategory: Record<string, Pick<Metadata, 'title' | 'description'>> = {
   lingerie: {
-    title: 'Luxury Lingerie',
-    description: 'Explore Zul Luz bras, panties, and lingerie sets created for timeless comfort and confidence.',
+    title: 'Luxury Lingerie & Lace Bras',
+    description: 'Explore bras, bralettes, and women’s lingerie by Zul Luz, with styles for comfort, support, and everyday confidence.',
   },
   sleepwear: {
-    title: 'Silk-Feel Sleepwear',
-    description: 'Discover elegant pajama sets, robes, and nightgowns for beautiful rituals of rest.',
+    title: 'Women’s Sleepwear & Pajama Sets',
+    description: 'Discover women’s pajama sets, robes, and nightgowns from Zul Luz, designed for comfort at home and restful nights.',
   },
   lifestyle: {
-    title: 'Lifestyle Collection',
-    description: 'Shop botanical wax, scrunchies, handmade bags, and thoughtful lifestyle pieces from Zul Luz.',
+    title: 'Botanical Wax, Scrunchies & Wayuu Bags',
+    description: 'Explore botanical wax air fresheners, crochet and silk scrunchies, and Wayuu bags from Zul Luz.',
   },
   'best-sellers': {
-    title: 'Best Sellers',
-    description: 'Shop the most-loved Zul Luz lingerie, sleepwear, and lifestyle pieces.',
+    title: 'Best-Selling Lingerie & Sleepwear',
+    description: 'Browse popular Zul Luz lingerie, sleepwear, and lifestyle products available in the current collection.',
   },
 }
 

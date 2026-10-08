@@ -1,6 +1,7 @@
 import type { MetadataRoute } from 'next'
 import { catalog } from '@/lib/catalog-server'
 import { absoluteUrl } from '@/lib/site'
+import { hasIndexableProductContent } from '@/lib/seo'
 
 export const revalidate = 3600
 
@@ -29,23 +30,34 @@ const staticRoutes: Array<{ path: string; changeFrequency: MetadataRoute.Sitemap
 ]
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const routes: MetadataRoute.Sitemap = staticRoutes.map((route) => ({
-    url: absoluteUrl(route.path),
-    changeFrequency: route.changeFrequency,
-    priority: route.priority,
-  }))
-
+  let products: Awaited<ReturnType<typeof catalog.getProducts>> | null = null
   try {
-    const products = await catalog.getProducts()
-    routes.push(...products.map((product) => ({
+    products = await catalog.getProducts()
+  } catch (error) {
+    // Keep the static sitemap available if Shopify is temporarily unavailable.
+    console.error('Unable to include Shopify products in sitemap', error)
+  }
+
+  const availableProducts = products
+  const routes: MetadataRoute.Sitemap = staticRoutes
+    .filter((route) => {
+      const collectionPath = route.path.match(/^\/(lingerie|sleepwear|lifestyle)\/([^/]+)$/)
+      if (!collectionPath || !availableProducts) return true
+      return availableProducts.some((product) => product.category === collectionPath[1] && product.subcategory === collectionPath[2])
+    })
+    .map((route) => ({
+      url: absoluteUrl(route.path),
+      changeFrequency: route.changeFrequency,
+      priority: route.priority,
+    }))
+
+  if (products) {
+    routes.push(...products.filter(hasIndexableProductContent).map((product) => ({
       url: absoluteUrl(`/product/${product.id}`),
       changeFrequency: 'weekly' as const,
       priority: 0.7,
       images: product.images,
     })))
-  } catch (error) {
-    // Keep the static sitemap available if Shopify is temporarily unavailable.
-    console.error('Unable to include Shopify products in sitemap', error)
   }
 
   return routes

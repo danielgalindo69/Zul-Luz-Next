@@ -16,7 +16,7 @@ type ShopifyProduct = {
   title: string
   description: string
   productType: string
-  images: { nodes: { url: string }[] }
+  images: { nodes: { url: string; altText: string | null }[] }
   options: { name: string; values: string[] }[]
   variants: { nodes: ShopifyVariant[] }
   collections: { nodes: { handle: string }[] }
@@ -35,7 +35,7 @@ const PRODUCT_QUERY = [
   '    pageInfo { hasNextPage endCursor }',
   '    nodes {',
   '      id handle title description productType',
-  '      images(first: 8) { nodes { url } }',
+  '      images(first: 8) { nodes { url altText } }',
   '      options { name values }',
   '      variants(first: 100) { nodes { id availableForSale price { amount currencyCode } selectedOptions { name value } } }',
   '      collections(first: 10) { nodes { handle } }',
@@ -103,6 +103,9 @@ function mapProduct(product: ShopifyProduct): Product {
   const { category, subcategory } = classify(product)
   const isBestSeller = collections.some((handle) => ['best-sellers', 'bets-sellers', 'bestsellers'].includes(handle))
   const images = product.images.nodes.map((image) => image.url)
+  const imageAlts = product.images.nodes.map((image, index) =>
+    image.altText?.trim() || `${product.title} — product image ${index + 1}`
+  )
 
   return {
     id: product.handle,
@@ -114,6 +117,7 @@ function mapProduct(product: ShopifyProduct): Product {
     subcategory,
     tag: isBestSeller ? 'Best Seller' : undefined,
     images: images.length > 0 ? images : ['/product-placeholder.svg'],
+    imageAlts,
     description: product.description,
     material: '',
     usageGuide: [],

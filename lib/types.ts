@@ -21,6 +21,7 @@ export type Product = {
   subcategory: string
   tag?: string
   images: string[]
+  imageAlts?: string[]
   description: string
   material: string
   usageGuide: string[]

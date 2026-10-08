@@ -4,6 +4,7 @@ import ProductDetail from '@/views/ProductDetail'
 import { catalog } from '@/lib/catalog-server'
 import { StructuredData } from '@/components/StructuredData'
 import { absoluteUrl } from '@/lib/site'
+import { hasIndexableProductContent } from '@/lib/seo'
 
 type ProductPageProps = { params: Promise<{ id: string }> }
 
@@ -18,6 +19,7 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
     title: product.name,
     description,
     alternates: { canonical },
+    ...(!hasIndexableProductContent(product) ? { robots: { index: false, follow: true } } : {}),
     openGraph: {
       title: product.name,
       description,

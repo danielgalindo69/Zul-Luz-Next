@@ -1,28 +1,11 @@
 'use client'
 
-import { useRef, useEffect, useState } from 'react'
+import { useState } from 'react'
 import Link from 'next/link'
 import { useStore } from '@/context/StoreContext'
 import { HeartIcon } from '@/components/Layout'
 import { useScrollAnimation } from '@/hooks/useScrollAnimation'
 import { Sparkles } from 'lucide-react'
-
-function useInView(threshold = 0.1) {
-  const ref = useRef<HTMLDivElement>(null)
-  const [inView, setInView] = useState(false)
-  useEffect(() => {
-    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setInView(true); obs.disconnect() } }, { threshold })
-    if (ref.current) obs.observe(ref.current)
-    return () => obs.disconnect()
-  }, [])
-  return { ref, inView }
-}
-
-const TESTIMONIALS = [
-  { name: 'María V.', location: 'Miami, FL', text: 'The lace bra is unlike anything I\'ve owned — it feels like wearing nothing at all. Absolute perfection.' },
-  { name: 'Claudia R.', location: 'New York, NY', text: 'My pajama set arrived beautifully packaged. The fabric is so soft and the fit is impeccable. I\'ll be ordering again.' },
-  { name: 'Isabella M.', location: 'Los Angeles, CA', text: 'Zul Luz understands what lingerie should feel like. Elegant, comfortable, and made with real care.' },
-]
 
 export default function Home() {
   const { ref: heroRef, inView: heroInView } = useScrollAnimation(0.05, 0)
@@ -30,23 +13,10 @@ export default function Home() {
   const { ref: prodsRef, inView: prodsInView } = useScrollAnimation(0.1, 200)
   const { ref: valsRef, inView: valsInView } = useScrollAnimation(0.1, 300)
   const { ref: storyRef, inView: storyInView } = useScrollAnimation(0.1, 400)
-  const { ref: testiRef, inView: testiInView } = useScrollAnimation(0.1, 500)
-  const [activeT, setActiveT] = useState(0)
   const [email, setEmail] = useState('')
   const [subscribed, setSubscribed] = useState(false)
   const { products, toggleFavorite, isFavorite } = useStore()
   const bestSellers = products.filter((product) => product.isBestSeller)
-
-  useEffect(() => {
-    const t = setInterval(() => setActiveT(i => (i + 1) % TESTIMONIALS.length), 4500)
-    return () => clearInterval(t)
-  }, [])
-
-  const counterData = [
-    { from: 0, to: 5432, duration: 2000, label: '5K+' },
-    { from: 0, to: 100, duration: 1800, label: '100%' },
-    { from: 0, to: 49, duration: 2200, label: '4.9★' },
-  ]
 
   return (
     <div className="bg-cream">
@@ -60,10 +30,10 @@ export default function Home() {
           <div className={`transition-all duration-1000 delay-200 ${heroInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
             <p className="text-[10px] tracking-[0.24em] uppercase text-wine mb-7 font-medium">Timeless Comfort &amp; Elegance</p>
             <h1 className="font-display text-[clamp(2.6rem,5vw,4.5rem)] font-light leading-[1.08] text-dark mb-7">
-              Elegance,<br /><em className="italic">Comfort</em><br />&amp; Confidence
+              Luxury Lingerie,<br /><em className="italic">Sleepwear</em><br />&amp; Everyday Elegance
             </h1>
             <p className="text-sm text-muted leading-[1.8] max-w-[340px] mb-10">
-              We celebrate femininity, comfort, and timeless elegance in every moment. Delicate fabrics and fine details, thoughtfully crafted in Colombia.
+              Explore lace lingerie, women’s sleepwear, and artisan accessories from a brand born in Colombia and designed for everyday rituals.
             </p>
             <div className="flex flex-wrap gap-3.5 mb-14">
               <Link href="/best-sellers" className="inline-block bg-wine text-cream text-[10px] tracking-[0.18em] uppercase px-8 py-4 hover:bg-dark transition-colors duration-300 font-medium">
@@ -73,11 +43,15 @@ export default function Home() {
                 Our Story
               </Link>
             </div>
-            <div className="flex items-center gap-10">
-              {[['5K+', 'Clients'], ['100%', 'Colombian'], ['4.9★', 'Rated']].map(([val, label]) => (
+            <div className="flex flex-wrap items-center gap-x-8 gap-y-3">
+              {[
+                ['Colombian Roots', 'A story born in Colombia'],
+                ['Thoughtful Fabrics', 'Chosen and tested with care'],
+                ['Everyday Rituals', 'Lingerie & sleepwear'],
+              ].map(([val, label]) => (
                 <div key={label} className="text-center">
-                  <div className="font-display text-2xl font-light text-dark">{val}</div>
-                  <div className="text-[9px] tracking-[0.18em] uppercase text-muted mt-1">{label}</div>
+                  <div className="font-display text-lg font-light text-dark">{val}</div>
+                  <div className="text-[9px] tracking-[0.12em] text-muted mt-1">{label}</div>
                 </div>
               ))}
             </div>
@@ -86,7 +60,7 @@ export default function Home() {
         <div className="relative overflow-hidden h-[55vw] sm:h-[50vw] lg:h-auto order-1 lg:order-2 bg-blush">
           <img
             src="https://images.unsplash.com/photo-1750064139819-da3bf362e7b3?w=900&h=1100&fit=crop&auto=format"
-            alt="Woman in elegant silk robe relaxing"
+            alt="Woman wearing a robe in a Zul Luz lifestyle campaign"
             className="w-full h-full object-cover object-center hover:scale-[1.03] transition-transform duration-1000"
           />
           {/* Dramatic bottom fade gradient — dissolves into cream background */}
@@ -94,7 +68,7 @@ export default function Home() {
           {/* Subtle side vignette for depth */}
           <div className="absolute inset-0 bg-gradient-to-r from-cream/20 via-transparent to-transparent pointer-events-none" />
           <div className="absolute bottom-10 left-6 bg-cream/90 backdrop-blur-sm px-4 py-3 border border-border/50">
-            <p className="text-[9px] tracking-[0.18em] uppercase text-muted">Made in</p>
+            <p className="text-[9px] tracking-[0.18em] uppercase text-muted">Brand roots</p>
             <p className="font-display text-sm text-dark font-light mt-0.5 inline-flex items-center gap-1.5">
               Colombia
               <svg viewBox="0 0 30 20" className="h-3.5 w-[21px] rounded-[2px] shadow-sm" aria-hidden="true">
@@ -168,7 +142,7 @@ export default function Home() {
               <div key={product.id} className="group" style={{ transitionDelay: `${i * 80}ms` }}>
                 <div className="relative overflow-hidden bg-blush mb-4" style={{ aspectRatio: '3/4' }}>
                   <Link href={`/product/${product.id}`}>
-                    <img src={product.images[0]} alt={product.name} className="w-full h-full object-cover object-center group-hover:scale-[1.05] transition-transform duration-600" />
+                    <img src={product.images[0]} alt={product.imageAlts?.[0] ?? product.name} className="w-full h-full object-cover object-center group-hover:scale-[1.05] transition-transform duration-600" />
                   </Link>
                   {product.tag && (
                     <span className="absolute top-3 left-3 bg-wine text-cream text-[8px] tracking-[0.14em] uppercase px-2.5 py-1 font-medium">{product.tag}</span>
@@ -253,27 +227,22 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Testimonials */}
+      {/* Brand proof points */}
       <section
-        ref={testiRef}
-        className={`py-20 lg:py-28 px-5 lg:px-10 bg-blush-light transition-all duration-700 delay-100 ${testiInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
+        className="bg-blush-light px-5 py-16 lg:px-10 lg:py-20"
       >
-        <div className="max-w-4xl mx-auto text-center">
-          <p className="text-[10px] tracking-[0.22em] uppercase text-wine mb-12 font-medium">Client Love</p>
-          <div className="relative min-h-[160px] flex flex-col items-center justify-center">
-            {TESTIMONIALS.map((t, i) => (
-              <div key={i} className={`absolute inset-0 flex flex-col items-center justify-center transition-all duration-500 ${i === activeT ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'}`}>
-                <p className="font-display text-xl lg:text-2xl font-light italic text-dark leading-[1.5] mb-8 max-w-2xl">&ldquo;{t.text}&rdquo;</p>
-                <div>
-                  <p className="text-xs font-medium text-dark tracking-wide">{t.name}</p>
-                  <p className="text-[10px] text-muted tracking-widest uppercase mt-1">{t.location}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-          <div className="flex items-center justify-center gap-2.5 mt-16">
-            {TESTIMONIALS.map((_, i) => (
-              <button key={i} onClick={() => setActiveT(i)} className={`transition-all duration-300 rounded-full ${i === activeT ? 'w-6 h-1.5 bg-wine' : 'w-1.5 h-1.5 bg-border hover:bg-muted'}`} />
+        <div className="mx-auto max-w-7xl">
+          <p className="mb-3 text-center text-[10px] font-medium uppercase tracking-[0.22em] text-wine">The Zul Luz approach</p>
+          <div className="grid gap-10 pt-8 md:grid-cols-3 md:gap-12">
+            {[
+              { title: 'Rooted in Colombia', text: 'A Colombian point of view shapes the brand and its story.' },
+              { title: 'Fabrics chosen with care', text: 'Materials are selected and tested for comfort, durability, and washability.' },
+              { title: 'Made for everyday rituals', text: 'Lingerie and sleepwear designed for the quiet moments that make a day feel yours.' },
+            ].map((item) => (
+              <article key={item.title} className="text-center">
+                <h2 className="mb-3 font-display text-xl font-light text-dark">{item.title}</h2>
+                <p className="mx-auto max-w-sm text-xs leading-[1.9] text-muted">{item.text}</p>
+              </article>
             ))}
           </div>
         </div>

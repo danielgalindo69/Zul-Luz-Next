@@ -323,7 +323,7 @@ export default function CategoryPage() {
                   <Link href={`/product/${product.id}`}>
                     <img
                       src={hoveredId === product.id && product.images[1] ? product.images[1] : product.images[0]}
-                      alt={product.name}
+                      alt={product.imageAlts?.[hoveredId === product.id && product.images[1] ? 1 : 0] ?? product.name}
                       className="w-full h-full object-cover object-center transition-all duration-500 group-hover:scale-[1.04]"
                     />
                   </Link>
