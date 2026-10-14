@@ -60,7 +60,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })
     .map((route) => ({
       url: absoluteUrl(route.path),
-      changeFrequency: route.changeFrequency,
+      changeFrequency: route.changeFrequency, 
       priority: route.priority,
     }))
 
