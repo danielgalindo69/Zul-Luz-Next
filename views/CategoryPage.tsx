@@ -37,31 +37,31 @@ const CATEGORY_META: Record<string, { title: string; subtitle: string; hero: str
   lingerie: {
     title: 'Lingerie',
     subtitle: 'Timeless Comfort & Elegance',
-    hero: 'https://images.unsplash.com/photo-1718963884192-69be3b1203e4?w=1400&h=500&fit=crop&auto=format',
+    hero: '/images/banner.webp',
     description: 'From our signature lace bras to barely-there panties and coordinated sets, every Zul Luz lingerie piece is crafted to feel as beautiful as it looks.',
   },
   bras: {
     title: 'Bras',
     subtitle: 'Support meets elegance',
-    hero: 'https://images.unsplash.com/photo-1606245455176-a30c1c36a6ad?w=1400&h=500&fit=crop&auto=format',
+    hero: '/images/banner.webp',
     description: 'Our bra collection balances delicate aesthetics with thoughtful engineering — for a fit that lifts, supports, and flatters naturally.',
   },
   panties: {
     title: 'Panties',
     subtitle: 'Second-skin comfort',
-    hero: 'https://images.unsplash.com/photo-1750064144361-bc7d12be7a98?w=1400&h=500&fit=crop&auto=format',
+    hero: '/images/banner.webp',
     description: 'Cut from our finest microfiber and lace fabrics, our panty collection prioritizes invisible comfort without sacrificing elegance.',
   },
   sets: {
     title: 'Lingerie Sets',
     subtitle: 'Perfectly matched pairs',
-    hero: 'https://images.unsplash.com/photo-1771620886948-3887ba3223f3?w=1400&h=500&fit=crop&auto=format',
+    hero: '/images/banner.webp',
     description: 'Curated bra and panty pairings in our finest fabrics. A complete set makes the most thoughtful gift — or the perfect treat for yourself.',
   },
   sleepwear: {
     title: 'Sleepwear',
     subtitle: 'For the rituals of rest',
-    hero: 'https://images.unsplash.com/photo-1766056278842-b754f1e093c0?w=1400&h=500&fit=crop&auto=format',
+    hero: '/images/Bata%20.webp',
     description: 'Pajama sets, robes, and nightgowns designed to make you feel as beautiful at home as you do anywhere else.',
   },
   lifestyle: {
@@ -91,7 +91,7 @@ const CATEGORY_META: Record<string, { title: string; subtitle: string; hero: str
   'best-sellers': {
     title: 'Best Sellers',
     subtitle: 'Our most-loved pieces',
-    hero: 'https://images.unsplash.com/photo-1750064139819-da3bf362e7b3?w=1400&h=500&fit=crop&auto=format',
+    hero: '/images/banner.webp',
     description: 'The pieces our clients reach for again and again — our most loved, most gifted, and most reordered styles.',
   },
   'gift-ideas': {

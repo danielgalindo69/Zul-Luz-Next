@@ -59,8 +59,8 @@ export default function Home() {
         </div>
         <div className="relative overflow-hidden h-[55vw] sm:h-[50vw] lg:h-auto order-1 lg:order-2 bg-blush">
           <img
-            src="https://images.unsplash.com/photo-1750064139819-da3bf362e7b3?w=900&h=1100&fit=crop&auto=format"
-            alt="Woman wearing a robe in a Zul Luz lifestyle campaign"
+            src="/images/Bata%20.webp"
+            alt="Woman wearing a lace-trim robe at sunset"
             className="w-full h-full object-cover object-center hover:scale-[1.03] transition-transform duration-1000"
           />
           {/* Dramatic bottom fade gradient — dissolves into cream background */}
@@ -92,7 +92,7 @@ export default function Home() {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
           <div className="md:col-span-2 group relative overflow-hidden bg-blush" style={{ aspectRatio: '16/9' }}>
-            <img src="https://images.unsplash.com/photo-1718963884192-69be3b1203e4?w=1000&h=560&fit=crop&auto=format" alt="Lingerie collection" className="w-full h-full object-cover object-top group-hover:scale-[1.04] transition-transform duration-700" />
+            <img src="/images/banner.webp" alt="Models wearing lingerie and robes" className="w-full h-full object-cover object-center group-hover:scale-[1.04] transition-transform duration-700" />
             <div className="absolute inset-0 bg-gradient-to-t from-dark/55 via-dark/10 to-transparent" />
             <div className="absolute bottom-0 left-0 p-7 lg:p-9">
               <p className="text-[9px] tracking-[0.2em] uppercase text-cream/60 mb-2">Zul Luz</p>
@@ -104,7 +104,7 @@ export default function Home() {
           </div>
           <div className="flex flex-col gap-3.5">
             {[
-              { img: 'https://images.unsplash.com/photo-1766056278842-b754f1e093c0?w=500&h=320&fit=crop&auto=format', label: 'Sleepwear', href: '/sleepwear', alt: 'Sleepwear collection' },
+              { img: '/images/Bata%20.webp', label: 'Sleepwear', href: '/sleepwear', alt: 'Woman wearing a lace-trim robe at sunset' },
               { img: 'https://images.unsplash.com/photo-1763478959183-136fe6bdcc93?w=500&h=320&fit=crop&auto=format', label: 'Lifestyle', href: '/lifestyle', alt: 'Lifestyle products' },
             ].map(cat => (
               <div key={cat.label} className="group relative overflow-hidden bg-blush flex-1" style={{ minHeight: '200px' }}>
