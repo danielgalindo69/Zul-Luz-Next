@@ -67,8 +67,11 @@ function classify(product: ShopifyProduct): Pick<Product, 'category' | 'subcateg
     return { category: 'sleepwear', subcategory }
   }
 
-  if (has('lingerie') || has('underwear') || /bra|bralet|panti|panty|thong|lingerie/.test(type + ' ' + title)) {
-    const subcategory = /bra|bralet/.test(type + ' ' + title) ? 'bras'
+  const productText = `${type} ${title}`
+  const isBra = /\bbra\b|\bbralet(?:te)?\b/.test(productText)
+
+  if (has('lingerie') || has('underwear') || /\bbra\b|\bbralet(?:te)?\b|panti|panty|thong|hipster|lingerie/.test(productText)) {
+    const subcategory = isBra ? 'bras'
       : /set/.test(type + ' ' + title) ? 'sets'
       : 'panties'
     return { category: 'lingerie', subcategory }
