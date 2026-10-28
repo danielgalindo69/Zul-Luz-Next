@@ -60,7 +60,7 @@ function classify(product: ShopifyProduct): Pick<Product, 'category' | 'subcateg
   const title = product.title.toLowerCase()
   const has = (value: string) => collections.includes(value)
 
-  if (has('sleepwear') || /pajama|pyjama|robe|slip dress|nightgown|sleep/.test(type + ' ' + title)) {
+  if (has('sleepwear') || /pajama|pijama|pyjama|robe|slip dress|nightgown|sleep/.test(type + ' ' + title)) {
     const subcategory = /robe/.test(type + ' ' + title) ? 'robes'
       : /slip dress|nightgown/.test(type + ' ' + title) ? 'nightgowns'
       : 'pajama-sets'

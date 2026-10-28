@@ -34,6 +34,12 @@ const getPriceValue = (value: string) => {
 }
 
 const CATEGORY_META: Record<string, { title: string; subtitle: string; hero: string; description: string }> = {
+  shop: {
+    title: 'Shop All',
+    subtitle: 'The Zul Luz Collection',
+    hero: '/images/banner.webp',
+    description: 'Explore all available lingerie, sleepwear, fragrance, and accessories from Zul Luz.',
+  },
   lingerie: {
     title: 'Lingerie',
     subtitle: 'Timeless Comfort & Elegance',
@@ -127,6 +133,7 @@ export default function CategoryPage() {
   }
 
   const scopedProducts = (() => {
+    if (slug === 'shop') return catalogProducts
     if (slug === 'best-sellers') return catalogProducts.filter(p => p.isBestSeller)
     if (slug === 'gift-ideas') return catalogProducts.filter(p => p.isGiftIdea)
     if (['lingerie', 'sleepwear', 'lifestyle'].includes(slug)) return catalogProducts.filter(p => p.category === slug)

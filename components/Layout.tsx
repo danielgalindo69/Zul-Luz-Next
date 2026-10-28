@@ -894,6 +894,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           <div className="min-w-0 space-y-4">
             <h4 className="text-[10px] tracking-[0.2em] uppercase font-semibold text-cream/50">Shop</h4>
             <ul className="space-y-2 text-xs font-light">
+              <li><Link href="/shop" className="hover:text-wine transition-colors">Shop All</Link></li>
               <li><Link href="/lingerie" className="hover:text-wine transition-colors">Bras & Lingerie Sets</Link></li>
               <li><Link href="/sleepwear" className="hover:text-wine transition-colors">Silk Pajamas</Link></li>
               <li><Link href="/lifestyle" className="hover:text-wine transition-colors">Robes & Loungewear</Link></li>
